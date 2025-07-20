@@ -15,14 +15,14 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.5 Setup autoloading for test classes following PSR-4 standards
   - [x] 1.6 Verify all tests pass
 
-- [ ] 2. Core Domain Object Tests
-  - [ ] 2.1 Write tests for Todo class including contentHash bug fix
-  - [ ] 2.2 Implement Todo constructor, getter methods, and deletion logic tests
-  - [ ] 2.3 Write tests for Definition class fluent builder pattern
-  - [ ] 2.4 Implement Definition priority, create, due, and automaticallyDelete method tests
-  - [ ] 2.5 Write tests for FinalizedDefinition temporal calculations
-  - [ ] 2.6 Implement FinalizedDefinition instance generation and timing tests
-  - [ ] 2.7 Verify all tests pass
+- [x] 2. Core Domain Object Tests
+  - [x] 2.1 Write tests for Todo class including contentHash bug fix
+  - [x] 2.2 Implement Todo constructor, getter methods, and deletion logic tests
+  - [x] 2.3 Write tests for Definition class fluent builder pattern
+  - [x] 2.4 Implement Definition priority, create, due, and automaticallyDelete method tests
+  - [x] 2.5 Write tests for FinalizedDefinition temporal calculations
+  - [x] 2.6 Implement FinalizedDefinition instance generation and timing tests
+  - [x] 2.7 Verify all tests pass
 
 - [ ] 3. Scheduling System Tests
   - [ ] 3.1 Write tests for Schedule class cron expression management
