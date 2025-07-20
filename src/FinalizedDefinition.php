@@ -175,7 +175,7 @@ final class FinalizedDefinition
 
         $currentDue = $this->due->schedule()->currentlyDueAt($when);
 
-        return Utils::equalToTheMinute($when, $currentDue) ? $when : null;
+        return $currentDue;
     }
 
     public function calculateCreateWhenDueAt(Carbon|DateTimeInterface|string|null $when = null): ?Carbon
