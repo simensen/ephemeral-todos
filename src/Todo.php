@@ -28,7 +28,7 @@ final class Todo
             'description' => $this->description,
             'priority' => $this->priority,
             'create' => $this->createAt?->format('c'),
-            'due' => $this->createAt?->format('c'),
+            'due' => $this->dueAt?->format('c'),
         ]));
     }
 
