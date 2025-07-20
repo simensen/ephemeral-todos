@@ -24,14 +24,14 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 2.6 Implement FinalizedDefinition instance generation and timing tests
   - [x] 2.7 Verify all tests pass
 
-- [ ] 3. Scheduling System Tests
-  - [ ] 3.1 Write tests for Schedule class cron expression management
-  - [ ] 3.2 Implement Schedule convenience methods and timezone handling tests
-  - [ ] 3.3 Write tests for Time class duration calculations
-  - [ ] 3.4 Implement Time invert method and immutability tests
-  - [ ] 3.5 Write tests for ManagesCronExpression trait functionality
-  - [ ] 3.6 Implement comprehensive cron expression scheduling tests
-  - [ ] 3.7 Verify all tests pass
+- [x] 3. Scheduling System Tests
+  - [x] 3.1 Write tests for Schedule class cron expression management
+  - [x] 3.2 Implement Schedule convenience methods and timezone handling tests
+  - [x] 3.3 Write tests for Time class duration calculations
+  - [x] 3.4 Implement Time invert method and immutability tests
+  - [x] 3.5 Write tests for ManagesCronExpression trait functionality
+  - [x] 3.6 Implement comprehensive cron expression scheduling tests
+  - [x] 3.7 Verify all tests pass
 
 - [ ] 4. Deletion Management Tests
   - [ ] 4.1 Write tests for AfterDueBy class completion-aware behavior
