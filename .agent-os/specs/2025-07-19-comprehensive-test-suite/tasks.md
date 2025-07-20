@@ -51,11 +51,11 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 5.6 Implement integration tests for scheduling and deletion scenarios
   - [x] 5.7 Verify all tests pass
 
-- [ ] 6. Time-Based Testing and Edge Cases
-  - [ ] 6.1 Write tests for timezone handling across all components
-  - [ ] 6.2 Implement Carbon test helpers and time manipulation tests
-  - [ ] 6.3 Write tests for cron expression edge cases and DST transitions
-  - [ ] 6.4 Implement boundary condition tests for scheduling calculations
-  - [ ] 6.5 Write tests for null value handling and error conditions
-  - [ ] 6.6 Implement comprehensive edge case coverage
-  - [ ] 6.7 Verify all tests pass and achieve 90%+ code coverage
+- [x] 6. Time-Based Testing and Edge Cases
+  - [x] 6.1 Write tests for timezone handling across all components
+  - [x] 6.2 Implement Carbon test helpers and time manipulation tests
+  - [x] 6.3 Write tests for cron expression edge cases and DST transitions
+  - [x] 6.4 Implement boundary condition tests for scheduling calculations
+  - [x] 6.5 Write tests for null value handling and error conditions
+  - [x] 6.6 Implement comprehensive edge case coverage
+  - [x] 6.7 Verify all tests pass and achieve 90%+ code coverage
