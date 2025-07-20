@@ -8,6 +8,14 @@ trait ManagesRelativeTime
 {
     private int $timeInSeconds = 0;
 
+    public static function zeroSeconds(): self
+    {
+        $instance = new self();
+        $instance->timeInSeconds = 0;
+
+        return $instance;
+    }
+
     public function toTime(): Time
     {
         return new Time($this->timeInSeconds);

@@ -33,23 +33,23 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 3.6 Implement comprehensive cron expression scheduling tests
   - [x] 3.7 Verify all tests pass
 
-- [ ] 4. Deletion Management Tests
-  - [ ] 4.1 Write tests for AfterDueBy class completion-aware behavior
-  - [ ] 4.2 Implement AfterDueBy time calculations and deletion rule tests
-  - [ ] 4.3 Write tests for AfterExistingFor class functionality
-  - [ ] 4.4 Implement AfterExistingFor completion awareness and time tests
-  - [ ] 4.5 Write tests for CompletionAware trait interface compliance
-  - [ ] 4.6 Implement deletion rule integration scenarios
-  - [ ] 4.7 Verify all tests pass
+- [x] 4. Deletion Management Tests
+  - [x] 4.1 Write tests for AfterDueBy class completion-aware behavior
+  - [x] 4.2 Implement AfterDueBy time calculations and deletion rule tests
+  - [x] 4.3 Write tests for AfterExistingFor class functionality
+  - [x] 4.4 Implement AfterExistingFor completion awareness and time tests
+  - [x] 4.5 Write tests for CompletionAware trait interface compliance
+  - [x] 4.6 Implement deletion rule integration scenarios
+  - [x] 4.7 Verify all tests pass
 
-- [ ] 5. Collection and Integration Tests
-  - [ ] 5.1 Write tests for Todos class definition management
-  - [ ] 5.2 Implement Todos collection filtering and instance generation tests
-  - [ ] 5.3 Write tests for Utils class helper methods
-  - [ ] 5.4 Implement Utils time comparison and conversion tests
-  - [ ] 5.5 Write integration tests for complete todo lifecycle workflows
-  - [ ] 5.6 Implement integration tests for scheduling and deletion scenarios
-  - [ ] 5.7 Verify all tests pass
+- [x] 5. Collection and Integration Tests
+  - [x] 5.1 Write tests for Todos class definition management
+  - [x] 5.2 Implement Todos collection filtering and instance generation tests
+  - [x] 5.3 Write tests for Utils class helper methods
+  - [x] 5.4 Implement Utils time comparison and conversion tests
+  - [x] 5.5 Write integration tests for complete todo lifecycle workflows
+  - [x] 5.6 Implement integration tests for scheduling and deletion scenarios
+  - [x] 5.7 Verify all tests pass
 
 - [ ] 6. Time-Based Testing and Edge Cases
   - [ ] 6.1 Write tests for timezone handling across all components
