@@ -7,13 +7,13 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
 
 ## Tasks
 
-- [ ] 1. Setup PHPUnit Test Environment
-  - [ ] 1.1 Write tests for PHPUnit configuration setup
-  - [ ] 1.2 Create composer.json with PHPUnit and testing dependencies
-  - [ ] 1.3 Configure phpunit.xml with test directories and coverage settings
-  - [ ] 1.4 Create base TestCase class with time-based testing helpers
-  - [ ] 1.5 Setup autoloading for test classes following PSR-4 standards
-  - [ ] 1.6 Verify all tests pass
+- [x] 1. Setup PHPUnit Test Environment
+  - [x] 1.1 Write tests for PHPUnit configuration setup
+  - [x] 1.2 Create composer.json with PHPUnit and testing dependencies
+  - [x] 1.3 Configure phpunit.xml with test directories and coverage settings
+  - [x] 1.4 Create base TestCase class with time-based testing helpers
+  - [x] 1.5 Setup autoloading for test classes following PSR-4 standards
+  - [x] 1.6 Verify all tests pass
 
 - [ ] 2. Core Domain Object Tests
   - [ ] 2.1 Write tests for Todo class including contentHash bug fix
