@@ -60,9 +60,12 @@
 ### Development Tools
 - **Standards:** PHP-CS-Fixer for code formatting
 - **Analysis:** PHPStan for static analysis
+- **Testing:** PHPUnit for testing
 - **CI/CD:** GitHub Actions for automated testing
 
 #### PHP-CS-Fixer for Code Formatting
+
+**PHP-CS-Fixer** is installed using Phive and `nix-direnv` (via `.envrc` and `flake.nix`) ensures `php-cs-fixer` is available on `$PATH`, so any ad-hoc usage of `php-cs-fixer` can just be run as `php-cs-fixer` without any additional path prefixes (`./tools` or `./vendor`).
 
 To **format** code, use the Composer script:
 
@@ -78,11 +81,17 @@ composer format:check
 
 #### PHPStan for Static Analysis
 
+**PHPStan** is installed using Phive and `nix-direnv` (via `.envrc` and `flake.nix`) ensures `phpstan` is available on `$PATH`, so any ad-hoc usage of `phpstan` can just be run as `phpstan` without any additional path prefixes (`./tools` or `./vendor`).
+
 To **analyse** code, use the Composer script:
 
 ```bash
 composer analyse
 ```
+
+#### PHPUnit for Testing
+
+**PHPUnit** is installed using Phive and `nix-direnv` (via `.envrc` and `flake.nix`) ensures `phpunit` is available on `$PATH`, so any ad-hoc usage of `phpunit` can just be run as `phpunit` without any additional path prefixes (`./tools` or `./vendor`).
 
 ## Deployment
 
