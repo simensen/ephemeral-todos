@@ -34,7 +34,8 @@
     },
     "scripts": {
         "format": "tools/php-cs-fixer fix",
-        "format:check": "tools/php-cs-fixer fix --dry-run --diff"
+        "format:check": "tools/php-cs-fixer fix --dry-run --diff",
+        "analyse": "tools/phpstan analyse"
     },
     "config": {
         "optimize-autoloader": true,

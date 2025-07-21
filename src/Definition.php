@@ -144,7 +144,7 @@ final class Definition
                 break;
 
             default:
-                dd(['wat' => $delete]);
+                throw new \InvalidArgumentException('Unsupported delete type: ' . get_class($delete));
         }
 
         return $instance;
@@ -176,6 +176,8 @@ final class Definition
             'automaticallyDeleteWhenCompleteAndAfterExistingFor' => $this->automaticallyDeleteWhenCompleteAndAfterExistingFor ?? null,
             'automaticallyDeleteWhenIncompleteAndAfterExistingFor' => $this->automaticallyDeleteWhenIncompleteAndAfterExistingFor ?? null,
         ]);
+
+        assert(array_key_exists('name', $arguments));
 
         return new FinalizedDefinition(...$arguments);
     }
