@@ -62,6 +62,28 @@
 - **Analysis:** PHPStan for static analysis
 - **CI/CD:** GitHub Actions for automated testing
 
+#### PHP-CS-Fixer for Code Formatting
+
+To **format** code, use the Composer script:
+
+```bash
+composer format:check
+```
+
+When **checking** code formatting, use the Composer script:
+
+```bash
+composer format:check
+```
+
+#### PHPStan for Static Analysis
+
+To **analyse** code, use the Composer script:
+
+```bash
+composer analyse
+```
+
 ## Deployment
 
 ### Distribution

@@ -1,6 +1,7 @@
-/vendor/
-/composer.lock
+/.direnv/
+/.php-cs-fixer.cache
 /.phpunit.cache/
+/composer.lock
 /coverage/
-.direnv/
 /tools/
+/vendor/
