@@ -144,7 +144,7 @@ final class Definition
                 break;
 
             default:
-                throw new \InvalidArgumentException('Unsupported delete type: ' . get_class($delete));
+                throw new \InvalidArgumentException('Unsupported delete type: '.get_class($delete));
         }
 
         return $instance;

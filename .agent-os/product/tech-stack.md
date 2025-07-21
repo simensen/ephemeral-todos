@@ -60,7 +60,7 @@
 ### Development Tools
 - **Standards:** PHP-CS-Fixer for code formatting
 - **Analysis:** PHPStan for static analysis
-- **Testing:** PHPUnit for testing
+- **Testing:** PHPUnit for testing and code coverage
 - **CI/CD:** GitHub Actions for automated testing
 
 #### PHP-CS-Fixer for Code Formatting
@@ -92,6 +92,19 @@ composer analyse
 #### PHPUnit for Testing
 
 **PHPUnit** is installed using Phive and `nix-direnv` (via `.envrc` and `flake.nix`) ensures `phpunit` is available on `$PATH`, so any ad-hoc usage of `phpunit` can just be run as `phpunit` without any additional path prefixes (`./tools` or `./vendor`).
+
+To **test** code, use the Composer script:
+
+```bash
+composer test
+```
+
+To **check code coverage**, use the Composer script:
+
+```bash
+composer test:coverage
+```
+
 
 ## Deployment
 
