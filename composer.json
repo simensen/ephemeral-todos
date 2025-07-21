@@ -35,7 +35,7 @@
     "scripts": {
         "format": "tools/php-cs-fixer fix",
         "format:check": "tools/php-cs-fixer fix --dry-run --diff",
-        "analyse": "tools/phpstan analyse"
+        "analyse": "tools/phpstan analyse --memory-limit=256M"
     },
     "config": {
         "optimize-autoloader": true,
