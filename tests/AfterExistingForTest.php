@@ -10,66 +10,66 @@ use Simensen\EphemeralTodos\Time;
 
 class AfterExistingForTest extends TestCase
 {
-    public function test_can_create_after_existing_for_instance()
+    public function testCanCreateAfterExistingForInstance()
     {
         $afterExistingFor = AfterExistingFor::oneWeek();
-        
+
         $this->assertInstanceOf(AfterExistingFor::class, $afterExistingFor);
         $this->assertEquals(604800, $afterExistingFor->timeInSeconds());
     }
 
-    public function test_has_completion_aware_methods()
+    public function testHasCompletionAwareMethods()
     {
         $afterExistingFor = AfterExistingFor::oneDay();
-        
+
         $this->assertTrue($afterExistingFor->appliesWhenComplete());
         $this->assertTrue($afterExistingFor->appliesWhenIncomplete());
         $this->assertTrue($afterExistingFor->appliesAlways());
     }
 
-    public function test_can_configure_completion_awareness()
+    public function testCanConfigureCompletionAwareness()
     {
         $afterExistingFor = AfterExistingFor::oneDay();
-        
+
         $completeOnly = $afterExistingFor->andIsComplete();
         $this->assertTrue($completeOnly->appliesWhenComplete());
         $this->assertFalse($completeOnly->appliesWhenIncomplete());
         $this->assertFalse($completeOnly->appliesAlways());
-        
+
         $incompleteOnly = $afterExistingFor->andIsIncomplete();
         $this->assertFalse($incompleteOnly->appliesWhenComplete());
         $this->assertTrue($incompleteOnly->appliesWhenIncomplete());
         $this->assertFalse($incompleteOnly->appliesAlways());
-        
+
         $whetherCompletedOrNot = $afterExistingFor->whetherCompletedOrNot();
         $this->assertTrue($whetherCompletedOrNot->appliesWhenComplete());
         $this->assertTrue($whetherCompletedOrNot->appliesWhenIncomplete());
         $this->assertTrue($whetherCompletedOrNot->appliesAlways());
     }
 
-    public function test_completion_aware_methods_return_new_instances()
+    public function testCompletionAwareMethodsReturnNewInstances()
     {
         $original = AfterExistingFor::oneDay();
         $complete = $original->andIsComplete();
         $incomplete = $original->andIsIncomplete();
         $whetherCompletedOrNot = $original->whetherCompletedOrNot();
-        
+
         $this->assertNotSame($original, $complete);
         $this->assertNotSame($original, $incomplete);
         $this->assertNotSame($original, $whetherCompletedOrNot);
         $this->assertNotSame($complete, $incomplete);
     }
 
-    public function test_can_convert_to_time_object()
+    public function testCanConvertToTimeObject()
     {
         $afterExistingFor = AfterExistingFor::fourHours();
         $time = $afterExistingFor->toTime();
-        
+
         $this->assertInstanceOf(Time::class, $time);
         $this->assertEquals(14400, $time->inSeconds());
     }
 
-    public function test_relative_time_convenience_methods()
+    public function testRelativeTimeConvenienceMethods()
     {
         $this->assertEquals(60, AfterExistingFor::oneMinute()->timeInSeconds());
         $this->assertEquals(120, AfterExistingFor::twoMinutes()->timeInSeconds());
@@ -85,16 +85,16 @@ class AfterExistingForTest extends TestCase
         $this->assertEquals(604800, AfterExistingFor::sevenDays()->timeInSeconds());
     }
 
-    public function test_chaining_completion_awareness_with_time_methods()
+    public function testChainingCompletionAwarenessWithTimeMethods()
     {
         $afterExistingFor = AfterExistingFor::oneWeek()->andIsIncomplete();
-        
+
         $this->assertEquals(604800, $afterExistingFor->timeInSeconds());
         $this->assertFalse($afterExistingFor->appliesWhenComplete());
         $this->assertTrue($afterExistingFor->appliesWhenIncomplete());
     }
 
-    public function test_different_time_durations()
+    public function testDifferentTimeDurations()
     {
         $this->assertEquals(1200, AfterExistingFor::twentyMinutes()->timeInSeconds());
         $this->assertEquals(2700, AfterExistingFor::fortyFiveMinutes()->timeInSeconds());
@@ -108,18 +108,18 @@ class AfterExistingForTest extends TestCase
         $this->assertEquals(1209600, AfterExistingFor::twoWeeks()->timeInSeconds());
     }
 
-    public function test_use_case_scenarios()
+    public function testUseCaseScenarios()
     {
         // Delete completed todos after 1 day
         $deleteCompleted = AfterExistingFor::oneDay()->andIsComplete();
         $this->assertTrue($deleteCompleted->appliesWhenComplete());
         $this->assertFalse($deleteCompleted->appliesWhenIncomplete());
-        
+
         // Delete incomplete todos after 1 week
         $deleteIncomplete = AfterExistingFor::oneWeek()->andIsIncomplete();
         $this->assertFalse($deleteIncomplete->appliesWhenComplete());
         $this->assertTrue($deleteIncomplete->appliesWhenIncomplete());
-        
+
         // Delete all todos after 2 weeks regardless of completion
         $deleteAll = AfterExistingFor::twoWeeks()->whetherCompletedOrNot();
         $this->assertTrue($deleteAll->appliesWhenComplete());

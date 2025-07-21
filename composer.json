@@ -32,6 +32,10 @@
             "Simensen\\EphemeralTodos\\Tests\\": "tests/"
         }
     },
+    "scripts": {
+        "format": "tools/php-cs-fixer fix",
+        "format:check": "tools/php-cs-fixer fix --dry-run --diff"
+    },
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true

@@ -13,12 +13,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.3 Set specific rules for different file types (JSON, YAML, Neon)
   - [x] 1.4 Test EditorConfig with different editors to verify behavior
 
-- [ ] 2. Install and Configure PHP-CS-Fixer
-  - [ ] 2.1 Add PHP-CS-Fixer to composer.json dev dependencies
-  - [ ] 2.2 Create .php-cs-fixer.dist.php configuration file with PER-CS and Symfony standards
-  - [ ] 2.3 Configure strict types, PHPDoc alignment, and global namespace imports
-  - [ ] 2.4 Add composer script for code formatting
-  - [ ] 2.5 Test PHP-CS-Fixer on existing codebase and verify no breaking changes
+- [x] 2. Install and Configure PHP-CS-Fixer
+  - [x] 2.1 Add PHP-CS-Fixer to composer.json dev dependencies
+  - [x] 2.2 Create .php-cs-fixer.dist.php configuration file with PER-CS and Symfony standards
+  - [x] 2.3 Configure strict types, PHPDoc alignment, and global namespace imports
+  - [x] 2.4 Add composer script for code formatting
+  - [x] 2.5 Test PHP-CS-Fixer on existing codebase and verify no breaking changes
 
 - [ ] 3. Install and Configure PHPStan
   - [ ] 3.1 Add PHPStan to composer.json dev dependencies

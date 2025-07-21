@@ -7,7 +7,7 @@ namespace Simensen\EphemeralTodos;
 final class Time
 {
     public function __construct(
-        private int $inSeconds
+        private int $inSeconds,
     ) {
     }
 

@@ -7,7 +7,7 @@ namespace Simensen\EphemeralTodos;
 final class Schedulish
 {
     public function __construct(
-        private Schedule|Time $schedulish
+        private Schedule|Time $schedulish,
     ) {
     }
 
@@ -23,8 +23,8 @@ final class Schedulish
 
     public function schedule(): Schedule
     {
-        if (! $this->schedulish instanceof Schedule) {
-            throw new \LogicException("Requested the Schedule associated with this Schedulish, but there is no Schedule associated with it.");
+        if (!$this->schedulish instanceof Schedule) {
+            throw new \LogicException('Requested the Schedule associated with this Schedulish, but there is no Schedule associated with it.');
         }
 
         return $this->schedulish;
@@ -32,8 +32,8 @@ final class Schedulish
 
     public function time(): Time
     {
-        if (! $this->schedulish instanceof Time) {
-            throw new \LogicException("Requested the Time associated with this Schedulish, but there is no Time associated with it.");
+        if (!$this->schedulish instanceof Time) {
+            throw new \LogicException('Requested the Time associated with this Schedulish, but there is no Time associated with it.');
         }
 
         return $this->schedulish;
@@ -49,7 +49,7 @@ final class Schedulish
             $other = new self($other);
         }
 
-        if (! $other instanceof self) {
+        if (!$other instanceof self) {
             return false;
         }
 

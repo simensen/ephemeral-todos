@@ -10,7 +10,7 @@ use Simensen\EphemeralTodos\Todo;
 
 class TodoTest extends TestCase
 {
-    public function test_constructor_with_required_parameters(): void
+    public function testConstructorWithRequiredParameters(): void
     {
         $createAt = new DateTimeImmutable('2025-01-19 12:00:00');
         $todo = new Todo('Test Task', $createAt, 1);
@@ -22,7 +22,7 @@ class TodoTest extends TestCase
         $this->assertNull($todo->description());
     }
 
-    public function test_constructor_with_all_parameters(): void
+    public function testConstructorWithAllParameters(): void
     {
         $createAt = new DateTimeImmutable('2025-01-19 12:00:00');
         $dueAt = new DateTimeImmutable('2025-01-19 15:00:00');
@@ -54,7 +54,7 @@ class TodoTest extends TestCase
         $this->assertEquals($deleteIncompleteExisting, $todo->automaticallyDeleteWhenIncompleteAndAfterExistingAt());
     }
 
-    public function test_constructor_with_null_values(): void
+    public function testConstructorWithNullValues(): void
     {
         $todo = new Todo('Null Task', null, null);
 
@@ -65,64 +65,64 @@ class TodoTest extends TestCase
         $this->assertNull($todo->description());
     }
 
-    public function test_content_hash_generates_consistent_hash(): void
+    public function testContentHashGeneratesConsistentHash(): void
     {
         $createAt = new DateTimeImmutable('2025-01-19 12:00:00');
         $dueAt = new DateTimeImmutable('2025-01-19 15:00:00');
-        
+
         $todo1 = new Todo('Test Task', $createAt, 1, $dueAt, 'Description');
         $todo2 = new Todo('Test Task', $createAt, 1, $dueAt, 'Description');
 
         $this->assertEquals($todo1->contentHash(), $todo2->contentHash());
     }
 
-    public function test_content_hash_differs_for_different_todos(): void
+    public function testContentHashDiffersForDifferentTodos(): void
     {
         $createAt = new DateTimeImmutable('2025-01-19 12:00:00');
         $dueAt = new DateTimeImmutable('2025-01-19 15:00:00');
-        
+
         $todo1 = new Todo('Test Task 1', $createAt, 1, $dueAt, 'Description');
         $todo2 = new Todo('Test Task 2', $createAt, 1, $dueAt, 'Description');
 
         $this->assertNotEquals($todo1->contentHash(), $todo2->contentHash());
     }
 
-    public function test_content_hash_bug_fix_due_date(): void
+    public function testContentHashBugFixDueDate(): void
     {
         $createAt = new DateTimeImmutable('2025-01-19 12:00:00');
         $dueAt = new DateTimeImmutable('2025-01-19 15:00:00');
-        
+
         $todo = new Todo('Test Task', $createAt, 1, $dueAt);
         $hash = $todo->contentHash();
-        
+
         // Decode the hash to verify it contains the correct due date
         $decoded = json_decode(base64_decode($hash), true);
-        
+
         // The bug was using createAt instead of dueAt for the 'due' field
         // This test will fail until the bug is fixed
         $this->assertEquals($dueAt->format('c'), $decoded['due'], 'contentHash should use dueAt, not createAt for due field');
         $this->assertEquals($createAt->format('c'), $decoded['create']);
     }
 
-    public function test_content_hash_with_null_dates(): void
+    public function testContentHashWithNullDates(): void
     {
         $todo = new Todo('Test Task', null, 1, null);
         $hash = $todo->contentHash();
-        
+
         $decoded = json_decode(base64_decode($hash), true);
-        
+
         $this->assertNull($decoded['create']);
         $this->assertNull($decoded['due']);
     }
 
-    public function test_should_eventually_be_deleted_returns_false_when_no_deletion_timestamps(): void
+    public function testShouldEventuallyBeDeletedReturnsFalseWhenNoDeletionTimestamps(): void
     {
         $todo = new Todo('Test Task', $this->now(), 1);
-        
+
         $this->assertFalse($todo->shouldEventuallyBeDeleted());
     }
 
-    public function test_should_eventually_be_deleted_returns_true_with_complete_after_due_timestamp(): void
+    public function testShouldEventuallyBeDeletedReturnsTrueWithCompleteAfterDueTimestamp(): void
     {
         $deleteAt = new DateTimeImmutable('2025-01-20 12:00:00');
         $todo = new Todo(
@@ -133,11 +133,11 @@ class TodoTest extends TestCase
             null,
             $deleteAt
         );
-        
+
         $this->assertTrue($todo->shouldEventuallyBeDeleted());
     }
 
-    public function test_should_eventually_be_deleted_returns_true_with_incomplete_after_due_timestamp(): void
+    public function testShouldEventuallyBeDeletedReturnsTrueWithIncompleteAfterDueTimestamp(): void
     {
         $deleteAt = new DateTimeImmutable('2025-01-20 12:00:00');
         $todo = new Todo(
@@ -149,11 +149,11 @@ class TodoTest extends TestCase
             null,
             $deleteAt
         );
-        
+
         $this->assertTrue($todo->shouldEventuallyBeDeleted());
     }
 
-    public function test_should_eventually_be_deleted_returns_true_with_complete_after_existing_timestamp(): void
+    public function testShouldEventuallyBeDeletedReturnsTrueWithCompleteAfterExistingTimestamp(): void
     {
         $deleteAt = new DateTimeImmutable('2025-01-20 12:00:00');
         $todo = new Todo(
@@ -166,11 +166,11 @@ class TodoTest extends TestCase
             null,
             $deleteAt
         );
-        
+
         $this->assertTrue($todo->shouldEventuallyBeDeleted());
     }
 
-    public function test_should_eventually_be_deleted_returns_true_with_incomplete_after_existing_timestamp(): void
+    public function testShouldEventuallyBeDeletedReturnsTrueWithIncompleteAfterExistingTimestamp(): void
     {
         $deleteAt = new DateTimeImmutable('2025-01-20 12:00:00');
         $todo = new Todo(
@@ -184,11 +184,11 @@ class TodoTest extends TestCase
             null,
             $deleteAt
         );
-        
+
         $this->assertTrue($todo->shouldEventuallyBeDeleted());
     }
 
-    public function test_all_getter_methods_return_correct_values(): void
+    public function testAllGetterMethodsReturnCorrectValues(): void
     {
         $createAt = new DateTimeImmutable('2025-01-19 12:00:00');
         $dueAt = new DateTimeImmutable('2025-01-19 15:00:00');
@@ -220,7 +220,7 @@ class TodoTest extends TestCase
         $this->assertEquals($deleteIncompleteExisting, $todo->automaticallyDeleteWhenIncompleteAndAfterExistingAt());
     }
 
-    public function test_todo_is_immutable(): void
+    public function testTodoIsImmutable(): void
     {
         $createAt = new DateTimeImmutable('2025-01-19 12:00:00');
         $todo = new Todo('Immutable Test', $createAt, 1);
@@ -228,7 +228,7 @@ class TodoTest extends TestCase
         // Verify all properties are readonly by checking there are no setter methods
         $reflection = new \ReflectionClass($todo);
         $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
-        
+
         $setterMethods = array_filter($methods, function ($method) {
             return str_starts_with($method->getName(), 'set');
         });
@@ -236,16 +236,16 @@ class TodoTest extends TestCase
         $this->assertEmpty($setterMethods, 'Todo class should not have any setter methods to maintain immutability');
     }
 
-    public function test_content_hash_includes_all_relevant_fields(): void
+    public function testContentHashIncludesAllRelevantFields(): void
     {
         $createAt = new DateTimeImmutable('2025-01-19 12:00:00');
         $dueAt = new DateTimeImmutable('2025-01-19 15:00:00');
-        
+
         $todo = new Todo('Hash Test', $createAt, 2, $dueAt, 'Hash description');
         $hash = $todo->contentHash();
-        
+
         $decoded = json_decode(base64_decode($hash), true);
-        
+
         $this->assertEquals('Hash Test', $decoded['name']);
         $this->assertEquals('Hash description', $decoded['description']);
         $this->assertEquals(2, $decoded['priority']);

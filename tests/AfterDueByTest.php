@@ -10,66 +10,66 @@ use Simensen\EphemeralTodos\Time;
 
 class AfterDueByTest extends TestCase
 {
-    public function test_can_create_after_due_by_instance()
+    public function testCanCreateAfterDueByInstance()
     {
         $afterDueBy = AfterDueBy::oneDay();
-        
+
         $this->assertInstanceOf(AfterDueBy::class, $afterDueBy);
         $this->assertEquals(86400, $afterDueBy->timeInSeconds());
     }
 
-    public function test_has_completion_aware_methods()
+    public function testHasCompletionAwareMethods()
     {
         $afterDueBy = AfterDueBy::oneDay();
-        
+
         $this->assertTrue($afterDueBy->appliesWhenComplete());
         $this->assertTrue($afterDueBy->appliesWhenIncomplete());
         $this->assertTrue($afterDueBy->appliesAlways());
     }
 
-    public function test_can_configure_completion_awareness()
+    public function testCanConfigureCompletionAwareness()
     {
         $afterDueBy = AfterDueBy::oneDay();
-        
+
         $completeOnly = $afterDueBy->andIsComplete();
         $this->assertTrue($completeOnly->appliesWhenComplete());
         $this->assertFalse($completeOnly->appliesWhenIncomplete());
         $this->assertFalse($completeOnly->appliesAlways());
-        
+
         $incompleteOnly = $afterDueBy->andIsIncomplete();
         $this->assertFalse($incompleteOnly->appliesWhenComplete());
         $this->assertTrue($incompleteOnly->appliesWhenIncomplete());
         $this->assertFalse($incompleteOnly->appliesAlways());
-        
+
         $whetherCompletedOrNot = $afterDueBy->whetherCompletedOrNot();
         $this->assertTrue($whetherCompletedOrNot->appliesWhenComplete());
         $this->assertTrue($whetherCompletedOrNot->appliesWhenIncomplete());
         $this->assertTrue($whetherCompletedOrNot->appliesAlways());
     }
 
-    public function test_completion_aware_methods_return_new_instances()
+    public function testCompletionAwareMethodsReturnNewInstances()
     {
         $original = AfterDueBy::oneDay();
         $complete = $original->andIsComplete();
         $incomplete = $original->andIsIncomplete();
         $whetherCompletedOrNot = $original->whetherCompletedOrNot();
-        
+
         $this->assertNotSame($original, $complete);
         $this->assertNotSame($original, $incomplete);
         $this->assertNotSame($original, $whetherCompletedOrNot);
         $this->assertNotSame($complete, $incomplete);
     }
 
-    public function test_can_convert_to_time_object()
+    public function testCanConvertToTimeObject()
     {
         $afterDueBy = AfterDueBy::twoHours();
         $time = $afterDueBy->toTime();
-        
+
         $this->assertInstanceOf(Time::class, $time);
         $this->assertEquals(7200, $time->inSeconds());
     }
 
-    public function test_relative_time_convenience_methods()
+    public function testRelativeTimeConvenienceMethods()
     {
         $this->assertEquals(60, AfterDueBy::oneMinute()->timeInSeconds());
         $this->assertEquals(120, AfterDueBy::twoMinutes()->timeInSeconds());
@@ -85,16 +85,16 @@ class AfterDueByTest extends TestCase
         $this->assertEquals(604800, AfterDueBy::sevenDays()->timeInSeconds());
     }
 
-    public function test_chaining_completion_awareness_with_time_methods()
+    public function testChainingCompletionAwarenessWithTimeMethods()
     {
         $afterDueBy = AfterDueBy::oneDay()->andIsComplete();
-        
+
         $this->assertEquals(86400, $afterDueBy->timeInSeconds());
         $this->assertTrue($afterDueBy->appliesWhenComplete());
         $this->assertFalse($afterDueBy->appliesWhenIncomplete());
     }
 
-    public function test_different_time_durations()
+    public function testDifferentTimeDurations()
     {
         $this->assertEquals(1200, AfterDueBy::twentyMinutes()->timeInSeconds());
         $this->assertEquals(2700, AfterDueBy::fortyFiveMinutes()->timeInSeconds());

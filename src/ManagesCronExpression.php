@@ -23,7 +23,7 @@ trait ManagesCronExpression
 
     public function withCronExpression(string $expression): static
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->cronExpression = $expression;
 
         return $instance;
@@ -31,7 +31,7 @@ trait ManagesCronExpression
 
     public function withTimeZone(DateTimeZone $timeZone): static
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->timeZone = $timeZone;
 
         return $instance;
@@ -39,16 +39,16 @@ trait ManagesCronExpression
 
     public function when($callback): static
     {
-        $instance = clone($this);
-        $instance->filters[] = is_callable($callback) ? $callback : fn() => $callback;
+        $instance = clone $this;
+        $instance->filters[] = is_callable($callback) ? $callback : fn () => $callback;
 
         return $instance;
     }
 
     public function skip($callback): static
     {
-        $instance = clone($this);
-        $instance->rejects[] = is_callable($callback) ? $callback : fn() => $callback;
+        $instance = clone $this;
+        $instance->rejects[] = is_callable($callback) ? $callback : fn () => $callback;
 
         return $instance;
     }
@@ -252,7 +252,7 @@ trait ManagesCronExpression
      */
     public function twiceDailyAt($first = 1, $second = 13, $offset = 0): static
     {
-        $hours = $first . ',' . $second;
+        $hours = $first.','.$second;
 
         return $this->spliceIntoPosition(1, $offset)
             ->spliceIntoPosition(2, $hours);
@@ -263,7 +263,7 @@ trait ManagesCronExpression
      */
     public function weekdays(): static
     {
-        return $this->days(Cron::MONDAY . '-' . Cron::FRIDAY);
+        return $this->days(Cron::MONDAY.'-'.Cron::FRIDAY);
     }
 
     /**
@@ -271,7 +271,7 @@ trait ManagesCronExpression
      */
     public function weekends(): static
     {
-        return $this->days(Cron::SATURDAY . ',' . Cron::SUNDAY);
+        return $this->days(Cron::SATURDAY.','.Cron::SUNDAY);
     }
 
     /**
@@ -375,7 +375,7 @@ trait ManagesCronExpression
      */
     public function twiceMonthly(int $first = 1, int $second = 16, string $time = '0:0'): static
     {
-        $daysOfMonth = $first . ',' . $second;
+        $daysOfMonth = $first.','.$second;
 
         $this->dailyAt($time);
 

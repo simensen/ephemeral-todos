@@ -17,7 +17,7 @@ final class Todo
         private ?DateTimeImmutable $automaticallyDeleteWhenCompleteAndAfterDueAt = null,
         private ?DateTimeImmutable $automaticallyDeleteWhenIncompleteAndAfterDueAt = null,
         private ?DateTimeImmutable $automaticallyDeleteWhenCompleteAndAfterExistingAt = null,
-        private ?DateTimeImmutable $automaticallyDeleteWhenIncompleteAndAfterExistingAt = null
+        private ?DateTimeImmutable $automaticallyDeleteWhenIncompleteAndAfterExistingAt = null,
     ) {
     }
 
@@ -59,24 +59,27 @@ final class Todo
 
     public function shouldEventuallyBeDeleted(): bool
     {
-        return $this->automaticallyDeleteWhenCompleteAndAfterDueAt ||
-            $this->automaticallyDeleteWhenIncompleteAndAfterDueAt ||
-            $this->automaticallyDeleteWhenCompleteAndAfterExistingAt ||
-            $this->automaticallyDeleteWhenIncompleteAndAfterExistingAt;
+        return $this->automaticallyDeleteWhenCompleteAndAfterDueAt
+            || $this->automaticallyDeleteWhenIncompleteAndAfterDueAt
+            || $this->automaticallyDeleteWhenCompleteAndAfterExistingAt
+            || $this->automaticallyDeleteWhenIncompleteAndAfterExistingAt;
     }
 
     public function automaticallyDeleteWhenCompleteAndAfterDueAt(): ?DateTimeImmutable
     {
         return $this->automaticallyDeleteWhenCompleteAndAfterDueAt;
     }
+
     public function automaticallyDeleteWhenIncompleteAndAfterDueAt(): ?DateTimeImmutable
     {
         return $this->automaticallyDeleteWhenIncompleteAndAfterDueAt;
     }
+
     public function automaticallyDeleteWhenCompleteAndAfterExistingAt(): ?DateTimeImmutable
     {
         return $this->automaticallyDeleteWhenCompleteAndAfterExistingAt;
     }
+
     public function automaticallyDeleteWhenIncompleteAndAfterExistingAt(): ?DateTimeImmutable
     {
         return $this->automaticallyDeleteWhenIncompleteAndAfterExistingAt;

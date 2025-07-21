@@ -11,6 +11,7 @@ final class Todos
 {
     /** @var FinalizedDefinition[] */
     private array $todos = [];
+
     /**
      * @param Definition|FinalizedDefinition|callable(Definition):(Definition) $toBeScheduled
      */
@@ -27,16 +28,15 @@ final class Todos
         $this->todos[] = $toBeScheduled;
     }
 
-
     /** @return FinalizedDefinition[] */
     public function readyToBeCreatedAt(Carbon|DateTimeInterface|string|null $when = null): array
     {
-        return array_filter($this->todos, fn(FinalizedDefinition $todo) => $todo->shouldBeCreatedAt($when));
+        return array_filter($this->todos, fn (FinalizedDefinition $todo) => $todo->shouldBeCreatedAt($when));
     }
 
     /** @return Todo[] */
     public function nextInstances(Carbon|DateTimeInterface|string|null $when = null): array
     {
-        return collect($this->todos)->map(fn(FinalizedDefinition $todo) => $todo->nextInstance($when))->toArray();
+        return collect($this->todos)->map(fn (FinalizedDefinition $todo) => $todo->nextInstance($when))->toArray();
     }
 }

@@ -28,7 +28,7 @@ final class Definition
 
     public function withName(string $name): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->name = $name;
 
         return $instance;
@@ -36,7 +36,7 @@ final class Definition
 
     public function withDescription(string $description): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->description = $description;
 
         return $instance;
@@ -44,7 +44,7 @@ final class Definition
 
     public function withHighPriority(): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->priority = 4;
 
         return $instance;
@@ -52,7 +52,7 @@ final class Definition
 
     public function withMediumPriority(): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->priority = 3;
 
         return $instance;
@@ -60,7 +60,7 @@ final class Definition
 
     public function withLowPriority(): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->priority = 2;
 
         return $instance;
@@ -68,7 +68,7 @@ final class Definition
 
     public function withNoPriority(): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->priority = 1;
 
         return $instance;
@@ -76,7 +76,7 @@ final class Definition
 
     public function withDefaultPriority(): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->priority = null;
 
         return $instance;
@@ -84,7 +84,7 @@ final class Definition
 
     public function create(Schedule|BeforeDueBy $create): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
 
         if ($create instanceof BeforeDueBy) {
             $create = $create->toTime();
@@ -97,7 +97,7 @@ final class Definition
 
     public function due(Schedule|In|callable $due): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
 
         if (is_callable($due)) {
             $due = $due(Schedule::create());
@@ -114,7 +114,7 @@ final class Definition
 
     public function automaticallyDelete(AfterDueBy|AfterExistingFor $delete): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
 
         $time = $delete->toTime();
 
@@ -155,7 +155,7 @@ final class Definition
         $create = $this->create ?? null;
         $due = $this->due ?? null;
 
-        if (! $create) {
+        if (!$create) {
             // If only a due date is specified, we will create
             // it right when it is due.
             $create = $due;
@@ -173,7 +173,7 @@ final class Definition
             'due' => $due,
             'automaticallyDeleteWhenCompleteAndAfterDueBy' => $this->automaticallyDeleteWhenCompleteAndAfterDueBy ?? null,
             'automaticallyDeleteWhenIncompleteAndAfterDueBy' => $this->automaticallyDeleteWhenIncompleteAndAfterDueBy ?? null,
-            'automaticallyDeleteWhenCompleteAndAfterExistingFor' => $this?->automaticallyDeleteWhenCompleteAndAfterExistingFor ?? null,
+            'automaticallyDeleteWhenCompleteAndAfterExistingFor' => $this->automaticallyDeleteWhenCompleteAndAfterExistingFor ?? null,
             'automaticallyDeleteWhenIncompleteAndAfterExistingFor' => $this->automaticallyDeleteWhenIncompleteAndAfterExistingFor ?? null,
         ]);
 

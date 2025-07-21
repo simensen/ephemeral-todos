@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\AfterExistingFor;
 use Simensen\EphemeralTodos\BeforeDueBy;
-use Simensen\EphemeralTodos\Definition;
 use Simensen\EphemeralTodos\FinalizedDefinition;
 use Simensen\EphemeralTodos\In;
 use Simensen\EphemeralTodos\Schedule;
@@ -37,7 +36,7 @@ class FinalizedDefinitionTest extends TestCase
         return new Schedulish($time->toTime());
     }
 
-    public function test_constructor_with_all_parameters()
+    public function testConstructorWithAllParameters()
     {
         $definition = new FinalizedDefinition(
             'Test Task',
@@ -55,7 +54,7 @@ class FinalizedDefinitionTest extends TestCase
         $this->assertEquals(2, $definition->priority());
     }
 
-    public function test_should_be_created_at_with_schedule()
+    public function testShouldBeCreatedAtWithSchedule()
     {
         $definition = new FinalizedDefinition(
             'Scheduled Task',
@@ -64,13 +63,13 @@ class FinalizedDefinitionTest extends TestCase
 
         // Should be created at 14:00
         $this->assertTrue($definition->shouldBeCreatedAt(Carbon::parse('2024-01-15 14:00:00')));
-        
+
         // Should not be created at other times
         $this->assertFalse($definition->shouldBeCreatedAt(Carbon::parse('2024-01-15 13:00:00')));
         $this->assertFalse($definition->shouldBeCreatedAt(Carbon::parse('2024-01-15 15:00:00')));
     }
 
-    public function test_should_be_created_at_with_before_due_by()
+    public function testShouldBeCreatedAtWithBeforeDueBy()
     {
         $definition = new FinalizedDefinition(
             'Before Due Task',
@@ -81,13 +80,13 @@ class FinalizedDefinitionTest extends TestCase
 
         // Should be created at 15:00 (1 hour before 16:00 due time)
         $this->assertTrue($definition->shouldBeCreatedAt(Carbon::parse('2024-01-15 15:00:00')));
-        
+
         // Should not be created at other times
         $this->assertFalse($definition->shouldBeCreatedAt(Carbon::parse('2024-01-15 14:00:00')));
         $this->assertFalse($definition->shouldBeCreatedAt(Carbon::parse('2024-01-15 16:00:00')));
     }
 
-    public function test_should_be_due_at_with_schedule()
+    public function testShouldBeDueAtWithSchedule()
     {
         $definition = new FinalizedDefinition(
             'Due Task',
@@ -98,13 +97,13 @@ class FinalizedDefinitionTest extends TestCase
 
         // Should be due at 16:00
         $this->assertTrue($definition->shouldBeDueAt(Carbon::parse('2024-01-15 16:00:00')));
-        
+
         // Should not be due at other times
         $this->assertFalse($definition->shouldBeDueAt(Carbon::parse('2024-01-15 14:00:00')));
         $this->assertFalse($definition->shouldBeDueAt(Carbon::parse('2024-01-15 17:00:00')));
     }
 
-    public function test_should_be_due_at_with_no_due_schedule()
+    public function testShouldBeDueAtWithNoDueSchedule()
     {
         $definition = new FinalizedDefinition(
             'No Due Task',
@@ -116,7 +115,7 @@ class FinalizedDefinitionTest extends TestCase
         $this->assertFalse($definition->shouldBeDueAt(Carbon::parse('2024-01-15 16:00:00')));
     }
 
-    public function test_should_be_due_at_with_in_object()
+    public function testShouldBeDueAtWithInObject()
     {
         $definition = new FinalizedDefinition(
             'In Due Task',
@@ -127,13 +126,13 @@ class FinalizedDefinitionTest extends TestCase
 
         // Should be due 1 hour after create time (15:00)
         $this->assertTrue($definition->shouldBeDueAt(Carbon::parse('2024-01-15 15:00:00')));
-        
+
         // Should not be due at other times
         $this->assertFalse($definition->shouldBeDueAt(Carbon::parse('2024-01-15 14:00:00')));
         $this->assertFalse($definition->shouldBeDueAt(Carbon::parse('2024-01-15 16:00:00')));
     }
 
-    public function test_next_instance_with_schedule_create()
+    public function testNextInstanceWithScheduleCreate()
     {
         $definition = new FinalizedDefinition(
             'Instance Task',
@@ -152,7 +151,7 @@ class FinalizedDefinitionTest extends TestCase
         $this->assertEquals(Carbon::parse('2024-01-15 16:00:00'), $todo->dueAt());
     }
 
-    public function test_next_instance_with_before_due_by_create()
+    public function testNextInstanceWithBeforeDueByCreate()
     {
         $definition = new FinalizedDefinition(
             'Before Due Instance',
@@ -169,7 +168,7 @@ class FinalizedDefinitionTest extends TestCase
         $this->assertEquals(Carbon::parse('2024-01-15 18:00:00'), $todo->dueAt());
     }
 
-    public function test_next_instance_with_deletion_rules()
+    public function testNextInstanceWithDeletionRules()
     {
         $definition = new FinalizedDefinition(
             'Deletion Task',
@@ -204,7 +203,7 @@ class FinalizedDefinitionTest extends TestCase
         );
     }
 
-    public function test_next_instance_with_in_due()
+    public function testNextInstanceWithInDue()
     {
         $definition = new FinalizedDefinition(
             'In Due Task',
@@ -219,7 +218,7 @@ class FinalizedDefinitionTest extends TestCase
         $this->assertEquals(Carbon::parse('2024-01-15 12:00:00'), $todo->dueAt()); // 2 hours later
     }
 
-    public function test_next_instance_with_null_when()
+    public function testNextInstanceWithNullWhen()
     {
         $definition = new FinalizedDefinition(
             'Current Time Task',
@@ -233,7 +232,7 @@ class FinalizedDefinitionTest extends TestCase
         $this->assertEquals(Carbon::parse('2024-01-15 10:00:00'), $todo->createAt());
     }
 
-    public function test_calculate_create_when_due_at_with_due_schedule()
+    public function testCalculateCreateWhenDueAtWithDueSchedule()
     {
         $definition = new FinalizedDefinition(
             'Calculate Create Task',
@@ -246,7 +245,7 @@ class FinalizedDefinitionTest extends TestCase
         $this->assertTrue($definition->shouldBeCreatedAt(Carbon::parse('2024-01-15 14:00:00')));
     }
 
-    public function test_calculate_due_when_create_at_with_in_due()
+    public function testCalculateDueWhenCreateAtWithInDue()
     {
         $definition = new FinalizedDefinition(
             'Calculate Due Task',
@@ -259,7 +258,7 @@ class FinalizedDefinitionTest extends TestCase
         $this->assertTrue($definition->shouldBeDueAt(Carbon::parse('2024-01-15 13:00:00')));
     }
 
-    public function test_edge_case_with_all_null_optional_parameters()
+    public function testEdgeCaseWithAllNullOptionalParameters()
     {
         $definition = new FinalizedDefinition(
             'Minimal Task',
@@ -275,7 +274,7 @@ class FinalizedDefinitionTest extends TestCase
         $this->assertFalse($todo->shouldEventuallyBeDeleted());
     }
 
-    public function test_complex_scheduling_scenario()
+    public function testComplexSchedulingScenario()
     {
         $definition = new FinalizedDefinition(
             'Complex Task',
@@ -291,7 +290,7 @@ class FinalizedDefinitionTest extends TestCase
 
         // Should be created at 16:15 (15 minutes before 16:30 due time)
         $this->assertTrue($definition->shouldBeCreatedAt(Carbon::parse('2024-01-15 16:15:00')));
-        
+
         // Should be due at 16:30
         $this->assertTrue($definition->shouldBeDueAt(Carbon::parse('2024-01-15 16:30:00')));
 

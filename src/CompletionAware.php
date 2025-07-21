@@ -26,7 +26,7 @@ trait CompletionAware
 
     public function whetherCompletedOrNot(): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->applyWhenComplete = true;
         $instance->applyWhenIncomplete = true;
 
@@ -35,7 +35,7 @@ trait CompletionAware
 
     public function andIsIncomplete(): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->applyWhenComplete = false;
         $instance->applyWhenIncomplete = true;
 
@@ -44,7 +44,7 @@ trait CompletionAware
 
     public function andIsComplete(): self
     {
-        $instance = clone($this);
+        $instance = clone $this;
         $instance->applyWhenComplete = true;
         $instance->applyWhenIncomplete = false;
 

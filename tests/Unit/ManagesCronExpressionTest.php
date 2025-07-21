@@ -19,12 +19,12 @@ class ManagesCronExpressionTest extends TestCase
         $this->trait = new TestManagesCronExpression();
     }
 
-    public function test_default_cron_expression(): void
+    public function testDefaultCronExpression(): void
     {
         $this->assertEquals('* * * * *', $this->trait->cronExpression());
     }
 
-    public function test_with_cron_expression_returns_new_instance(): void
+    public function testWithCronExpressionReturnsNewInstance(): void
     {
         $original = $this->trait;
         $modified = $original->withCronExpression('0 0 * * *');
@@ -34,7 +34,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertEquals('0 0 * * *', $modified->cronExpression());
     }
 
-    public function test_with_timezone_returns_new_instance(): void
+    public function testWithTimezoneReturnsNewInstance(): void
     {
         $original = $this->trait;
         $timezone = new DateTimeZone('America/New_York');
@@ -43,15 +43,15 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertNotSame($original, $modified);
     }
 
-    public function test_when_filter_with_callable(): void
+    public function testWhenFilterWithCallable(): void
     {
-        $modified = $this->trait->when(function() { return true; });
+        $modified = $this->trait->when(function () { return true; });
 
         $this->assertNotSame($this->trait, $modified);
         $this->assertInstanceOf(TestManagesCronExpression::class, $modified);
     }
 
-    public function test_when_filter_with_boolean(): void
+    public function testWhenFilterWithBoolean(): void
     {
         $modified = $this->trait->when(true);
 
@@ -59,15 +59,15 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertInstanceOf(TestManagesCronExpression::class, $modified);
     }
 
-    public function test_skip_filter_with_callable(): void
+    public function testSkipFilterWithCallable(): void
     {
-        $modified = $this->trait->skip(function() { return false; });
+        $modified = $this->trait->skip(function () { return false; });
 
         $this->assertNotSame($this->trait, $modified);
         $this->assertInstanceOf(TestManagesCronExpression::class, $modified);
     }
 
-    public function test_skip_filter_with_boolean(): void
+    public function testSkipFilterWithBoolean(): void
     {
         $modified = $this->trait->skip(false);
 
@@ -75,7 +75,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertInstanceOf(TestManagesCronExpression::class, $modified);
     }
 
-    public function test_between_creates_time_interval_filter(): void
+    public function testBetweenCreatesTimeIntervalFilter(): void
     {
         $modified = $this->trait->between('09:00', '17:00');
 
@@ -83,7 +83,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertInstanceOf(TestManagesCronExpression::class, $modified);
     }
 
-    public function test_unless_between_creates_inverse_time_interval_filter(): void
+    public function testUnlessBetweenCreatesInverseTimeIntervalFilter(): void
     {
         $modified = $this->trait->unlessBetween('22:00', '06:00');
 
@@ -91,7 +91,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertInstanceOf(TestManagesCronExpression::class, $modified);
     }
 
-    public function test_splice_into_position_modifies_cron_expression(): void
+    public function testSpliceIntoPositionModifiesCronExpression(): void
     {
         // Test splicing minute position (position 1)
         $modified = $this->trait->testSpliceIntoPosition(1, '30');
@@ -114,13 +114,13 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertEquals('* * * * 1-5', $modified->cronExpression());
     }
 
-    public function test_splice_into_position_with_multiple_values(): void
+    public function testSpliceIntoPositionWithMultipleValues(): void
     {
         $modified = $this->trait->testSpliceIntoPosition(1, '15,30,45');
         $this->assertEquals('15,30,45 * * * *', $modified->cronExpression());
     }
 
-    public function test_splice_into_position_preserves_immutability(): void
+    public function testSpliceIntoPositionPreservesImmutability(): void
     {
         $original = $this->trait;
         $modified = $original->testSpliceIntoPosition(1, '30');
@@ -130,7 +130,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertEquals('30 * * * *', $modified->cronExpression());
     }
 
-    public function test_is_due_with_matching_expression(): void
+    public function testIsDueWithMatchingExpression(): void
     {
         $this->travelTo('2025-01-19 12:00:00');
 
@@ -140,7 +140,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertFalse($hourly->isDue('2025-01-19 13:30:00'));
     }
 
-    public function test_is_due_with_current_time_when_null(): void
+    public function testIsDueWithCurrentTimeWhenNull(): void
     {
         $this->travelTo('2025-01-19 14:00:00');
 
@@ -148,7 +148,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertTrue($hourly->isDue());
     }
 
-    public function test_currently_due_at_calculates_next_run_time(): void
+    public function testCurrentlyDueAtCalculatesNextRunTime(): void
     {
         $this->travelTo('2025-01-19 12:30:00');
 
@@ -161,7 +161,7 @@ class ManagesCronExpressionTest extends TestCase
         );
     }
 
-    public function test_currently_due_at_with_specific_time(): void
+    public function testCurrentlyDueAtWithSpecificTime(): void
     {
         $daily = $this->trait->withCronExpression('0 0 * * *');
         $dueTime = $daily->currentlyDueAt('2025-01-19 14:30:00');
@@ -172,7 +172,7 @@ class ManagesCronExpressionTest extends TestCase
         );
     }
 
-    public function test_timezone_handling_in_filters(): void
+    public function testTimezoneHandlingInFilters(): void
     {
         $timezone = new DateTimeZone('America/New_York');
         $withTimezone = $this->trait->withTimeZone($timezone);
@@ -182,11 +182,11 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertInstanceOf(TestManagesCronExpression::class, $filtered);
     }
 
-    public function test_complex_filter_combinations(): void
+    public function testComplexFilterCombinations(): void
     {
         $complex = $this->trait
-            ->when(function() { return true; })
-            ->skip(function() { return false; })
+            ->when(function () { return true; })
+            ->skip(function () { return false; })
             ->between('09:00', '17:00')
             ->unlessBetween('12:00', '13:00');
 
@@ -194,7 +194,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertNotSame($this->trait, $complex);
     }
 
-    public function test_in_time_interval_logic_with_same_day(): void
+    public function testInTimeIntervalLogicWithSameDay(): void
     {
         $this->travelTo('2025-01-19 12:00:00');
 
@@ -202,7 +202,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertInstanceOf(TestManagesCronExpression::class, $betweenSameDay);
     }
 
-    public function test_in_time_interval_logic_with_overnight(): void
+    public function testInTimeIntervalLogicWithOvernight(): void
     {
         $this->travelTo('2025-01-19 01:00:00');
 
@@ -210,14 +210,14 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertInstanceOf(TestManagesCronExpression::class, $betweenOvernight);
     }
 
-    public function test_method_chaining_maintains_immutability(): void
+    public function testMethodChainingMaintainsImmutability(): void
     {
         $original = $this->trait;
 
         $chained = $original
             ->withCronExpression('0 9 * * *')
-            ->when(function() { return true; })
-            ->skip(function() { return false; })
+            ->when(function () { return true; })
+            ->skip(function () { return false; })
             ->between('09:00', '17:00');
 
         $this->assertNotSame($original, $chained);
@@ -225,7 +225,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertEquals('0 9 * * *', $chained->cronExpression());
     }
 
-    public function test_cron_constants_usage(): void
+    public function testCronConstantsUsage(): void
     {
         // Test that the trait can handle Cron constants
         $weekdays = $this->trait->testSpliceIntoPosition(5, '1-5'); // MONDAY-FRIDAY
@@ -235,7 +235,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertEquals('* * * * 6,0', $weekends->cronExpression());
     }
 
-    public function test_to_carbon_method_with_timezone(): void
+    public function testToCarbonMethodWithTimezone(): void
     {
         $timezone = new DateTimeZone('America/New_York');
         $withTimezone = $this->trait->withTimeZone($timezone);
@@ -244,7 +244,7 @@ class ManagesCronExpressionTest extends TestCase
         $this->assertTrue($withTimezone->isDue('2025-01-19 12:00:00'));
     }
 
-    public function test_passes_cron_expression_validation(): void
+    public function testPassesCronExpressionValidation(): void
     {
         $this->travelTo('2025-01-19 12:00:00');
 

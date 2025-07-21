@@ -13,7 +13,7 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Set a fixed time for predictable testing
         Carbon::setTestNow('2025-01-19 12:00:00');
     }
@@ -22,12 +22,12 @@ abstract class TestCase extends BaseTestCase
     {
         // Reset Carbon's test time
         Carbon::setTestNow();
-        
+
         parent::tearDown();
     }
 
     /**
-     * Advance the test time by the specified amount
+     * Advance the test time by the specified amount.
      */
     protected function travelTo(string $time): void
     {
@@ -35,7 +35,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Travel forward in time by the specified interval
+     * Travel forward in time by the specified interval.
      */
     protected function travel(string $interval): void
     {
@@ -44,7 +44,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Travel backward in time by the specified interval
+     * Travel backward in time by the specified interval.
      */
     protected function travelBack(string $interval): void
     {
@@ -53,7 +53,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Get the current test time
+     * Get the current test time.
      */
     protected function now(): CarbonInterface
     {
@@ -61,7 +61,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Create a Carbon instance in a specific timezone for testing
+     * Create a Carbon instance in a specific timezone for testing.
      */
     protected function carbonInTimezone(string $time, string $timezone): Carbon
     {
@@ -69,7 +69,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Assert that two Carbon instances are equal to the minute (ignoring seconds)
+     * Assert that two Carbon instances are equal to the minute (ignoring seconds).
      */
     protected function assertCarbonEqualToMinute(Carbon $expected, Carbon $actual, string $message = ''): void
     {

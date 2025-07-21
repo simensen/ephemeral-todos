@@ -18,7 +18,7 @@ final class FinalizedDefinition
         private ?Time $automaticallyDeleteWhenCompleteAndAfterDueBy = null,
         private ?Time $automaticallyDeleteWhenIncompleteAndAfterDueBy = null,
         private ?Time $automaticallyDeleteWhenCompleteAndAfterExistingFor = null,
-        private ?Time $automaticallyDeleteWhenIncompleteAndAfterExistingFor = null
+        private ?Time $automaticallyDeleteWhenIncompleteAndAfterExistingFor = null,
     ) {
     }
 
@@ -47,7 +47,7 @@ final class FinalizedDefinition
 
     public function shouldBeDueAt(Carbon|DateTimeInterface|string|null $when = null): bool
     {
-        if (! $this->due) {
+        if (!$this->due) {
             return false;
         }
 
@@ -70,7 +70,7 @@ final class FinalizedDefinition
 
         if ($this->create->isSchedule()) {
             $createAt = $this->create->schedule()->currentlyDueAt($when);
-            if (! Utils::equalToTheMinute($when, $createAt)) {
+            if (!Utils::equalToTheMinute($when, $createAt)) {
                 $createAt = null;
                 $dueAt = null;
             } else {
@@ -79,7 +79,7 @@ final class FinalizedDefinition
         } else {
             $createAt = $this->calculateCreateWhenDueAt($when);
             $dueAt = $this->due->schedule()->currentlyDueAt($createAt);
-            if (! Utils::equalToTheMinute($when, $createAt)) {
+            if (!Utils::equalToTheMinute($when, $createAt)) {
                 $createAt = null;
                 $dueAt = null;
             }
@@ -158,7 +158,7 @@ final class FinalizedDefinition
 
     public function calculateDueDateWhenCreatedAt(Carbon|DateTimeInterface|string|null $when = null): ?Carbon
     {
-        if (! $this->due) {
+        if (!$this->due) {
             return null;
         }
 
@@ -166,7 +166,7 @@ final class FinalizedDefinition
 
         if ($this->due->isTime()) {
             $currentCreate = $this->create->schedule()->currentlyDueAt($when);
-            if (! Utils::equalToTheMinute($when, $currentCreate)) {
+            if (!Utils::equalToTheMinute($when, $currentCreate)) {
                 return null;
             }
 
@@ -186,7 +186,7 @@ final class FinalizedDefinition
             $currentDue = $this->due?->schedule()->currentlyDueAt($when);
             $calculatedCreate = $this->calculateDateFromRelativeTime($currentDue, $this->create->time()->invert());
 
-            if (! Utils::equalToTheMinute($when, $calculatedCreate)) {
+            if (!Utils::equalToTheMinute($when, $calculatedCreate)) {
                 return null;
             }
 

@@ -16,14 +16,14 @@ use Simensen\EphemeralTodos\Tests\TestCase;
 
 class DefinitionTest extends TestCase
 {
-    public function test_define_creates_new_instance(): void
+    public function testDefineCreatesNewInstance(): void
     {
         $definition = Definition::define();
-        
+
         $this->assertInstanceOf(Definition::class, $definition);
     }
 
-    public function test_fluent_builder_pattern_returns_new_instances(): void
+    public function testFluentBuilderPatternReturnsNewInstances(): void
     {
         $original = Definition::define();
         $withName = $original->withName('Test Task');
@@ -36,27 +36,27 @@ class DefinitionTest extends TestCase
         $this->assertNotSame($withDescription, $withPriority);
     }
 
-    public function test_with_name_method(): void
+    public function testWithNameMethod(): void
     {
         $definition = Definition::define()->withName('Task Name');
-        
+
         // Since properties are private, we test through finalization
         $this->expectNotToPerformAssertions();
         // If finalization works without error, the name was set correctly
     }
 
-    public function test_with_description_method(): void
+    public function testWithDescriptionMethod(): void
     {
         $definition = Definition::define()
             ->withName('Test Task')
             ->withDescription('Task description')
             ->due(Schedule::create()->daily());
-        
+
         $finalized = $definition->finalize();
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_with_high_priority_sets_priority_to_4(): void
+    public function testWithHighPrioritySetsPriorityTo4(): void
     {
         $definition = Definition::define()
             ->withName('High Priority Task')
@@ -67,7 +67,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_with_medium_priority_sets_priority_to_3(): void
+    public function testWithMediumPrioritySetsPriorityTo3(): void
     {
         $definition = Definition::define()
             ->withName('Medium Priority Task')
@@ -78,7 +78,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_with_low_priority_sets_priority_to_2(): void
+    public function testWithLowPrioritySetsPriorityTo2(): void
     {
         $definition = Definition::define()
             ->withName('Low Priority Task')
@@ -89,7 +89,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_with_no_priority_sets_priority_to_1(): void
+    public function testWithNoPrioritySetsPriorityTo1(): void
     {
         $definition = Definition::define()
             ->withName('No Priority Task')
@@ -100,7 +100,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_with_default_priority_sets_priority_to_null(): void
+    public function testWithDefaultPrioritySetsPriorityToNull(): void
     {
         $definition = Definition::define()
             ->withName('Default Priority Task')
@@ -111,7 +111,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_create_method_with_schedule(): void
+    public function testCreateMethodWithSchedule(): void
     {
         $schedule = Schedule::create()->daily();
         $definition = Definition::define()
@@ -122,7 +122,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_create_method_with_before_due_by(): void
+    public function testCreateMethodWithBeforeDueBy(): void
     {
         $beforeDue = BeforeDueBy::whenDue();
         $definition = Definition::define()
@@ -134,7 +134,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_due_method_with_schedule(): void
+    public function testDueMethodWithSchedule(): void
     {
         $schedule = Schedule::create()->daily();
         $definition = Definition::define()
@@ -145,7 +145,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_due_method_with_in_object(): void
+    public function testDueMethodWithInObject(): void
     {
         $in = In::twoHours();
         $definition = Definition::define()
@@ -156,17 +156,17 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_due_method_with_callable(): void
+    public function testDueMethodWithCallable(): void
     {
         $definition = Definition::define()
             ->withName('Callable Due Task')
-            ->due(fn($schedule) => $schedule->daily());
+            ->due(fn ($schedule) => $schedule->daily());
 
         $finalized = $definition->finalize();
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_automatically_delete_with_after_due_by(): void
+    public function testAutomaticallyDeleteWithAfterDueBy(): void
     {
         $afterDue = AfterDueBy::oneHour()->whetherCompletedOrNot();
         $definition = Definition::define()
@@ -178,7 +178,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_automatically_delete_with_after_existing_for(): void
+    public function testAutomaticallyDeleteWithAfterExistingFor(): void
     {
         $afterExisting = AfterExistingFor::oneHour()->whetherCompletedOrNot();
         $definition = Definition::define()
@@ -190,17 +190,17 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_finalize_throws_exception_when_neither_create_nor_due_defined(): void
+    public function testFinalizeThrowsExceptionWhenNeitherCreateNorDueDefined(): void
     {
         $definition = Definition::define()->withName('Incomplete Task');
 
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('You must define a `create` or `due` for a definition to be finalized.');
-        
+
         $definition->finalize();
     }
 
-    public function test_finalize_uses_due_as_create_when_only_due_defined(): void
+    public function testFinalizeUsesDueAsCreateWhenOnlyDueDefined(): void
     {
         $definition = Definition::define()
             ->withName('Due Only Task')
@@ -210,7 +210,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_finalize_preserves_both_create_and_due_when_both_defined(): void
+    public function testFinalizePreservesBothCreateAndDueWhenBothDefined(): void
     {
         $definition = Definition::define()
             ->withName('Both Create and Due Task')
@@ -221,10 +221,10 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_method_chaining_preserves_immutability(): void
+    public function testMethodChainingPreservesImmutability(): void
     {
         $original = Definition::define();
-        
+
         $chained = $original
             ->withName('Chained Task')
             ->withDescription('Chained description')
@@ -234,13 +234,13 @@ class DefinitionTest extends TestCase
 
         // Original should be unchanged
         $this->assertNotSame($original, $chained);
-        
+
         // Chained should be finalizable
         $finalized = $chained->finalize();
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_priority_methods_override_each_other(): void
+    public function testPriorityMethodsOverrideEachOther(): void
     {
         $definition = Definition::define()
             ->withName('Priority Test')
@@ -253,7 +253,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_automatically_delete_switch_statement_logic_with_after_due_by_applies_always(): void
+    public function testAutomaticallyDeleteSwitchStatementLogicWithAfterDueByAppliesAlways(): void
     {
         $afterDue = AfterDueBy::oneHour()->whetherCompletedOrNot();
         $definition = Definition::define()
@@ -265,7 +265,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_automatically_delete_switch_statement_logic_with_after_due_by_applies_when_complete(): void
+    public function testAutomaticallyDeleteSwitchStatementLogicWithAfterDueByAppliesWhenComplete(): void
     {
         $afterDue = AfterDueBy::oneHour()->andIsComplete();
         $definition = Definition::define()
@@ -277,7 +277,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_automatically_delete_switch_statement_logic_with_after_due_by_applies_when_incomplete(): void
+    public function testAutomaticallyDeleteSwitchStatementLogicWithAfterDueByAppliesWhenIncomplete(): void
     {
         $afterDue = AfterDueBy::oneHour()->andIsIncomplete();
         $definition = Definition::define()
@@ -289,7 +289,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_automatically_delete_switch_statement_logic_with_after_existing_for_applies_always(): void
+    public function testAutomaticallyDeleteSwitchStatementLogicWithAfterExistingForAppliesAlways(): void
     {
         $afterExisting = AfterExistingFor::oneHour()->whetherCompletedOrNot();
         $definition = Definition::define()
@@ -301,7 +301,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_automatically_delete_switch_statement_logic_with_after_existing_for_applies_when_complete(): void
+    public function testAutomaticallyDeleteSwitchStatementLogicWithAfterExistingForAppliesWhenComplete(): void
     {
         $afterExisting = AfterExistingFor::oneHour()->andIsComplete();
         $definition = Definition::define()
@@ -313,7 +313,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function test_automatically_delete_switch_statement_logic_with_after_existing_for_applies_when_incomplete(): void
+    public function testAutomaticallyDeleteSwitchStatementLogicWithAfterExistingForAppliesWhenIncomplete(): void
     {
         $afterExisting = AfterExistingFor::oneHour()->andIsIncomplete();
         $definition = Definition::define()

@@ -7,11 +7,11 @@ namespace Simensen\EphemeralTodos\Tests;
 use Carbon\Carbon;
 use DateTimeZone;
 use PHPUnit\Framework\TestCase;
+use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\Definition;
 use Simensen\EphemeralTodos\Schedule;
-use Simensen\EphemeralTodos\Utils;
 use Simensen\EphemeralTodos\Todos;
-use Simensen\EphemeralTodos\AfterDueBy;
+use Simensen\EphemeralTodos\Utils;
 
 class TimezoneHandlingTest extends TestCase
 {
@@ -26,7 +26,7 @@ class TimezoneHandlingTest extends TestCase
         Carbon::setTestNow();
     }
 
-    public function test_utils_to_carbon_with_different_timezones()
+    public function testUtilsToCarbonWithDifferentTimezones()
     {
         $utc = new DateTimeZone('UTC');
         $eastern = new DateTimeZone('America/New_York');
@@ -53,7 +53,7 @@ class TimezoneHandlingTest extends TestCase
         $this->assertNotEquals($easternTime->getTimestamp(), $pacificTime->getTimestamp());
     }
 
-    public function test_utils_equal_to_the_minute_across_timezones()
+    public function testUtilsEqualToTheMinuteAcrossTimezones()
     {
         // Same moment in time, different timezone representations
         $utcTime = Carbon::parse('2024-01-15 15:00:30 UTC');
@@ -70,7 +70,7 @@ class TimezoneHandlingTest extends TestCase
         $this->assertFalse(Utils::equalToTheMinute($utcTime, $differentUtcMinute));
     }
 
-    public function test_schedule_with_timezone_aware_cron_expressions()
+    public function testScheduleWithTimezoneAwareCronExpressions()
     {
         $easternTz = new DateTimeZone('America/New_York');
         $pacificTz = new DateTimeZone('America/Los_Angeles');
@@ -90,13 +90,13 @@ class TimezoneHandlingTest extends TestCase
         // Test with times that are clearly different minutes in UTC
         $easternNoon = Carbon::parse('2024-01-15 12:00:00', $easternTz); // 17:00 UTC
         $pacificNoon = Carbon::parse('2024-01-15 12:00:00', $pacificTz); // 20:00 UTC
-        
+
         // 9:00 AM schedule should not be due at noon
         $this->assertFalse($easternSchedule->isDue($easternNoon));
         $this->assertFalse($pacificSchedule->isDue($pacificNoon));
     }
 
-    public function test_todo_creation_across_timezones()
+    public function testTodoCreationAcrossTimezones()
     {
         $todos = new Todos();
 
@@ -129,7 +129,7 @@ class TimezoneHandlingTest extends TestCase
         $this->assertEquals('Morning Meeting', $pacificInstance->name());
     }
 
-    public function test_deletion_times_with_timezone_considerations()
+    public function testDeletionTimesWithTimezoneConsiderations()
     {
         $todos = new Todos();
 
@@ -157,7 +157,7 @@ class TimezoneHandlingTest extends TestCase
         $this->assertEquals($expectedDeletion->getTimestamp(), $deletionTime->getTimestamp());
     }
 
-    public function test_midnight_boundary_across_timezones()
+    public function testMidnightBoundaryAcrossTimezones()
     {
         $todos = new Todos();
 
@@ -183,13 +183,13 @@ class TimezoneHandlingTest extends TestCase
         );
     }
 
-    public function test_daylight_saving_time_transition()
+    public function testDaylightSavingTimeTransition()
     {
         $easternTz = new DateTimeZone('America/New_York');
 
         // Spring forward: 2:00 AM becomes 3:00 AM on March 10, 2024
         $springForwardDay = Carbon::parse('2024-03-10 02:30:00', $easternTz);
-        
+
         // Fall back: 2:00 AM becomes 1:00 AM on November 3, 2024
         $fallBackDay = Carbon::parse('2024-11-03 01:30:00', $easternTz);
 
@@ -202,7 +202,7 @@ class TimezoneHandlingTest extends TestCase
 
         // During spring forward, 2:30 AM doesn't exist
         $springReady = $todos->readyToBeCreatedAt($springForwardDay);
-        
+
         // During fall back, 1:30 AM happens twice
         $fallReady = $todos->readyToBeCreatedAt($fallBackDay);
 
@@ -212,7 +212,7 @@ class TimezoneHandlingTest extends TestCase
         $this->assertIsArray($fallReady);
     }
 
-    public function test_international_date_line_handling()
+    public function testInternationalDateLineHandling()
     {
         $tokyoTz = new DateTimeZone('Asia/Tokyo');
         $honoluluTz = new DateTimeZone('Pacific/Honolulu');
@@ -236,7 +236,7 @@ class TimezoneHandlingTest extends TestCase
         $this->assertEquals($honoluluTz->getName(), $convertedHonolulu->getTimezone()->getName());
     }
 
-    public function test_weekly_schedule_across_timezone_boundaries()
+    public function testWeeklyScheduleAcrossTimezoneBoundaries()
     {
         $todos = new Todos();
 
@@ -264,7 +264,7 @@ class TimezoneHandlingTest extends TestCase
         $this->assertEquals(1, $easternMonday->dayOfWeek); // Monday
     }
 
-    public function test_timezone_preservation_in_todo_instances()
+    public function testTimezonePreservationInTodoInstances()
     {
         $todos = new Todos();
 
