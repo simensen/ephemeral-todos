@@ -12,7 +12,9 @@ use DateTimeZone;
 trait ManagesCronExpression
 {
     private string $cronExpression = '* * * * *';
+    /** @var array<callable> */
     private array $filters = [];
+    /** @var array<callable> */
     private array $rejects = [];
     private DateTimeZone $timeZone;
 
@@ -37,7 +39,7 @@ trait ManagesCronExpression
         return $instance;
     }
 
-    public function when($callback): static
+    public function when(callable|bool $callback): static
     {
         $instance = clone $this;
         $instance->filters[] = is_callable($callback) ? $callback : fn () => $callback;
@@ -45,7 +47,7 @@ trait ManagesCronExpression
         return $instance;
     }
 
-    public function skip($callback): static
+    public function skip(callable|bool $callback): static
     {
         $instance = clone $this;
         $instance->rejects[] = is_callable($callback) ? $callback : fn () => $callback;
@@ -72,7 +74,7 @@ trait ManagesCronExpression
     /**
      * Schedule the event to run between start and end time.
      */
-    private function inTimeInterval($startTime, $endTime): callable
+    private function inTimeInterval(string $startTime, string $endTime): callable
     {
         [$now, $startTime, $endTime] = [
             Carbon::now($this->timeZone ?? null),
@@ -82,9 +84,9 @@ trait ManagesCronExpression
 
         if ($endTime->lessThan($startTime)) {
             if ($startTime->greaterThan($now)) {
-                $startTime->subDay(1);
+                $startTime->subDay();
             } else {
-                $endTime->addDay(1);
+                $endTime->addDay();
             }
         }
 
@@ -168,6 +170,7 @@ trait ManagesCronExpression
     /**
      * Schedule the event to run hourly at a given offset in the hour.
      */
+    /** @param array<int>|int $offset */
     public function hourlyAt(array|int $offset): static
     {
         $offset = is_array($offset) ? implode(',', $offset) : $offset;
@@ -242,7 +245,7 @@ trait ManagesCronExpression
     /**
      * Schedule the event to run twice daily.
      */
-    public function twiceDaily($first = 1, $second = 13): static
+    public function twiceDaily(int $first = 1, int $second = 13): static
     {
         return $this->twiceDailyAt($first, $second, 0);
     }
@@ -250,7 +253,7 @@ trait ManagesCronExpression
     /**
      * Schedule the event to run twice daily at a given offset.
      */
-    public function twiceDailyAt($first = 1, $second = 13, $offset = 0): static
+    public function twiceDailyAt(int $first = 1, int $second = 13, int $offset = 0): static
     {
         $hours = $first.','.$second;
 
@@ -343,6 +346,7 @@ trait ManagesCronExpression
     /**
      * Schedule the event to run weekly on a given day and time.
      */
+    /** @param array<int>|int $dayOfWeek */
     public function weeklyOn(array|int $dayOfWeek, string $time = '0:0'): static
     {
         $this->dailyAt($time);
@@ -385,7 +389,7 @@ trait ManagesCronExpression
     /**
      * Schedule the event to run on the last day of the month.
      */
-    public function lastDayOfMonth($time = '0:0'): static
+    public function lastDayOfMonth(string $time = '0:0'): static
     {
         return $this->dailyAt($time)
             ->spliceIntoPosition(3, Carbon::now()->endOfMonth()->day);
@@ -426,6 +430,7 @@ trait ManagesCronExpression
     /**
      * Set the days of the week the command should run on.
      */
+    /** @param array<int|string>|int|string $days */
     public function days(array|int|string $days): static
     {
         $days = is_array($days) ? $days : func_get_args();
