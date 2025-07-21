@@ -25,9 +25,9 @@ The following core features have been implemented:
 ### Must-Have Features
 
 - [x] **Comprehensive Test Suite** - Unit and integration tests for all core functionality `L`
-- [ ] **Documentation & Examples** - README with usage examples and API documentation `M`
-- [ ] **Composer Package Setup** - Packagist distribution with proper versioning `S`
+- [x] **Composer Package Setup** - Packagist distribution with proper versioning `S`
 - [ ] **Code Quality Tools** - PHP-CS-Fixer, PHPStan configuration `S`
+- [ ] **Documentation & Examples** - README with usage examples and API documentation `M`
 
 ### Should-Have Features
 
