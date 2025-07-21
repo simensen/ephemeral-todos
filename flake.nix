@@ -12,18 +12,19 @@
         pkgs = nixpkgs.legacyPackages.${system};
         
         configuredPkgs = {
-          php = pkgs.php.withExtensions ({ all, enabled }: enabled ++ (with all; [ gnupg xdebug ]));
+          php = pkgs.php.buildEnv {
+            extensions = { enabled, all }: enabled ++ (with all; [ gnupg xdebug ]);
+            extraConfig = "memory_limit=-1";
+          };
         };
       in
       {
         devShells.default = pkgs.mkShell {
-          name = "simensen-symfony-messenger-message-tracing";
           packages = [
             configuredPkgs.php
             configuredPkgs.php.packages.composer
             configuredPkgs.php.packages.phive
             pkgs.gnupg
-            pkgs.yamllint
           ];
           shellHook = ''
             export PATH=$(pwd)/tools:$PATH

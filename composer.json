@@ -33,7 +33,7 @@
         }
     },
     "scripts": {
-        "analyse": "phpstan analyse --memory-limit=256M",
+        "analyse": "phpstan analyse",
         "format": "php-cs-fixer fix",
         "format:check": "php-cs-fixer fix --dry-run --diff",
         "test": "phpunit",
