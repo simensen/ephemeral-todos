@@ -14,6 +14,7 @@ use Simensen\EphemeralTodos\In;
 use Simensen\EphemeralTodos\Schedule;
 use Simensen\EphemeralTodos\Time;
 use Simensen\EphemeralTodos\Todo;
+use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
 
 class DeletionIntegrationTest extends TestCase
 {
@@ -191,5 +192,36 @@ class DeletionIntegrationTest extends TestCase
         $todo = Todo::fromFinalizedDefinition($finalizedDef, Carbon::now()->addHour());
 
         $this->assertNull($todo->automaticallyDeleteAt());
+    }
+
+    /**
+     * Demonstration of reduced assertion boilerplate using TestScenarioBuilder.
+     * Compare to testTodoWithAfterDueByDeletionRule above.
+     */
+    public function testAssertionMethodsDemonstration()
+    {
+        // OLD APPROACH (see testTodoWithAfterDueByDeletionRule): Multiple individual assertions
+        // $this->assertEquals($expectedName, $todo->name());
+        // $this->assertEquals($expectedPriority, $todo->priority()); 
+        // $this->assertEquals($expectedTime, $todo->dueAt());
+        // $this->assertEquals($expectedDeletionTime, $todo->automaticallyDeleteAt());
+
+        // NEW APPROACH: Single comprehensive assertion
+        $scenario = TestScenarioBuilder::create()
+            ->withName('Complete project report')
+            ->withPriority('high')
+            ->daily()
+            ->at('12:00');
+
+        $definition = $scenario->buildDefinition();
+        $finalizedDef = $definition->finalize();
+        $todo = $finalizedDef->currentInstance(Carbon::parse('2024-01-15 12:00:00'));
+
+        // Single assertion validates name, priority, and schedule timing
+        $scenario->assertTodoMatches($todo);
+
+        // Individual assertions only needed for deletion-specific logic (Phase 5 feature)
+        $this->assertNotNull($todo);
+        $this->assertEquals(Carbon::parse('2024-01-15 12:00:00'), $todo->dueAt());
     }
 }

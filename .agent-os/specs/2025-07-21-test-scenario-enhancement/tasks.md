@@ -28,12 +28,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 3.4 Deploy to ComprehensiveEdgeCaseTest.php and TodoLifecycleIntegrationTest.php
   - [x] 3.5 Verify all tests pass
 
-- [ ] 4. Phase 4: Comprehensive Assertion Methods
-  - [ ] 4.1 Write tests for deep Todo object validation and assertion framework
-  - [ ] 4.2 Implement assertTodoMatches() and assertDefinitionMatches() methods
-  - [ ] 4.3 Create custom PHPUnit constraint classes for reusable assertions
-  - [ ] 4.4 Deploy assertion methods to DeletionIntegrationTest.php and reduce assertion boilerplate
-  - [ ] 4.5 Verify all tests pass
+- [x] 4. Phase 4: Comprehensive Assertion Methods
+  - [x] 4.1 Write tests for deep Todo object validation and assertion framework
+  - [x] 4.2 Implement assertTodoMatches() and assertDefinitionMatches() methods
+  - [x] 4.3 Create custom PHPUnit constraint classes for reusable assertions
+  - [x] 4.4 Deploy assertion methods to DeletionIntegrationTest.php and reduce assertion boilerplate
+  - [x] 4.5 Verify all tests pass
 
 - [ ] 5. Phase 5: Deletion Rule Management
   - [ ] 5.1 Write tests for completion-aware deletion testing

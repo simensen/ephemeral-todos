@@ -10,6 +10,8 @@ use Simensen\EphemeralTodos\Definition;
 use Simensen\EphemeralTodos\Schedule;
 use Simensen\EphemeralTodos\BeforeDueBy;
 use Simensen\EphemeralTodos\In;
+use Simensen\EphemeralTodos\Todo;
+use PHPUnit\Framework\Assert;
 
 class TestScenarioBuilder
 {
@@ -291,6 +293,85 @@ class TestScenarioBuilder
             'friday' => 5,
             'saturday' => 6,
             default => 1, // Default to Monday
+        };
+    }
+
+    public function assertTodoMatches(?Todo $todo): void
+    {
+        Assert::assertNotNull($todo, 'Expected Todo object but got null');
+
+        if ($this->name !== null) {
+            Assert::assertEquals(
+                $this->name,
+                $todo->name(),
+                "Expected todo name '{$this->name}' but got '{$todo->name()}'"
+            );
+        }
+
+        if ($this->priority !== null) {
+            $expectedPriorityValue = $this->convertPriorityToNumber($this->priority);
+            $actualPriorityValue = $todo->priority();
+            
+            Assert::assertEquals(
+                $expectedPriorityValue,
+                $actualPriorityValue,
+                "Expected todo priority '{$expectedPriorityValue}' ({$this->priority}) but got '{$actualPriorityValue}'"
+            );
+        }
+
+        // Validate due time if we have schedule configuration
+        if ($this->scheduleTime !== null && $this->scheduleType === 'daily') {
+            $expectedTime = $this->scheduleTime;
+            $actualTime = $todo->dueAt()?->format('H:i');
+            
+            Assert::assertEquals(
+                $expectedTime,
+                $actualTime,
+                "Expected todo due time '{$expectedTime}' but got '{$actualTime}'"
+            );
+        }
+
+        // Note: Timezone validation will be enhanced in future phases
+        // Currently timezone configuration is stored but not fully integrated
+        // with the Definition building process
+    }
+
+    public function assertDefinitionMatches(Definition $definition): void
+    {
+        $finalizedDefinition = $definition->finalize();
+        
+        // Get a test instance to validate the definition
+        $testTime = $this->baseTime ?? Carbon::now();
+        $todo = $finalizedDefinition->currentInstance($testTime);
+
+        if ($todo !== null) {
+            $this->assertTodoMatches($todo);
+        } else {
+            // If we can't get an instance at base time, try at schedule time
+            if ($this->scheduleTime !== null) {
+                $scheduleTestTime = Carbon::parse($testTime->format('Y-m-d') . ' ' . $this->scheduleTime);
+                $todo = $finalizedDefinition->currentInstance($scheduleTestTime);
+                
+                if ($todo !== null) {
+                    $this->assertTodoMatches($todo);
+                } else {
+                    Assert::fail('Could not create todo instance from definition for validation');
+                }
+            } else {
+                Assert::fail('Could not create todo instance from definition for validation');
+            }
+        }
+    }
+
+    private function convertPriorityToNumber(string $priority): ?int
+    {
+        return match ($priority) {
+            'high' => 4,
+            'medium' => 3,
+            'low' => 2,
+            'none' => 1,
+            'default' => null,
+            default => null,
         };
     }
 
