@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Simensen\EphemeralTodos\Tests\Integration;
 
 use Carbon\Carbon;
-use PHPUnit\Framework\TestCase;
+use Simensen\EphemeralTodos\Tests\TestCase;
+use Simensen\EphemeralTodos\Tests\Testing\ManagesCarbonTime;
 use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\AfterExistingFor;
 use Simensen\EphemeralTodos\Definition;
@@ -16,14 +17,12 @@ use Simensen\EphemeralTodos\Todos;
 
 class TodosTest extends TestCase
 {
+    use ManagesCarbonTime;
+
     protected function setUp(): void
     {
-        Carbon::setTestNow('2024-01-15 10:00:00');
-    }
-
-    protected function tearDown(): void
-    {
-        Carbon::setTestNow();
+        // Use custom test time to match existing test expectations
+        $this->setUpCarbonTime('2024-01-15 10:00:00');
     }
 
     public function testCanCreateEmptyTodosCollection()

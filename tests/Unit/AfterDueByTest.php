@@ -8,9 +8,11 @@ use PHPUnit\Framework\TestCase;
 use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\Time;
 use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
+use Simensen\EphemeralTodos\Tests\Testing\RelativeTimeDataProvider;
 
 class AfterDueByTest extends TestCase
 {
+    use RelativeTimeDataProvider;
     public function testCanCreateAfterDueByInstance()
     {
         $afterDueBy = AfterDueBy::oneDay();
@@ -70,20 +72,14 @@ class AfterDueByTest extends TestCase
         $this->assertEquals(7200, $time->inSeconds());
     }
 
-    public function testRelativeTimeConvenienceMethods()
+    /**
+     * @dataProvider relativeTimeMethodsProvider
+     */
+    public function testRelativeTimeConvenienceMethods(string $methodName, int $expectedSeconds)
     {
-        $this->assertEquals(60, AfterDueBy::oneMinute()->timeInSeconds());
-        $this->assertEquals(120, AfterDueBy::twoMinutes()->timeInSeconds());
-        $this->assertEquals(300, AfterDueBy::fiveMinutes()->timeInSeconds());
-        $this->assertEquals(600, AfterDueBy::tenMinutes()->timeInSeconds());
-        $this->assertEquals(900, AfterDueBy::fifteenMinutes()->timeInSeconds());
-        $this->assertEquals(1800, AfterDueBy::thirtyMinutes()->timeInSeconds());
-        $this->assertEquals(3600, AfterDueBy::oneHour()->timeInSeconds());
-        $this->assertEquals(3600, AfterDueBy::sixtyMinutes()->timeInSeconds());
-        $this->assertEquals(7200, AfterDueBy::twoHours()->timeInSeconds());
-        $this->assertEquals(86400, AfterDueBy::oneDay()->timeInSeconds());
-        $this->assertEquals(604800, AfterDueBy::oneWeek()->timeInSeconds());
-        $this->assertEquals(604800, AfterDueBy::sevenDays()->timeInSeconds());
+        $method = [AfterDueBy::class, $methodName];
+        $instance = call_user_func($method);
+        $this->assertEquals($expectedSeconds, $instance->timeInSeconds());
     }
 
     public function testChainingCompletionAwarenessWithTimeMethods()
@@ -95,19 +91,7 @@ class AfterDueByTest extends TestCase
         $this->assertFalse($afterDueBy->appliesWhenIncomplete());
     }
 
-    public function testDifferentTimeDurations()
-    {
-        $this->assertEquals(1200, AfterDueBy::twentyMinutes()->timeInSeconds());
-        $this->assertEquals(2700, AfterDueBy::fortyFiveMinutes()->timeInSeconds());
-        $this->assertEquals(5400, AfterDueBy::ninetyMinutes()->timeInSeconds());
-        $this->assertEquals(10800, AfterDueBy::threeHours()->timeInSeconds());
-        $this->assertEquals(14400, AfterDueBy::fourHours()->timeInSeconds());
-        $this->assertEquals(21600, AfterDueBy::sixHours()->timeInSeconds());
-        $this->assertEquals(43200, AfterDueBy::twelveHours()->timeInSeconds());
-        $this->assertEquals(172800, AfterDueBy::twoDays()->timeInSeconds());
-        $this->assertEquals(259200, AfterDueBy::threeDays()->timeInSeconds());
-        $this->assertEquals(1209600, AfterDueBy::twoWeeks()->timeInSeconds());
-    }
+    // Note: testDifferentTimeDurations is now covered by testRelativeTimeConvenienceMethods data provider
 
     /**
      * Demonstration of TestScenarioBuilder integration with AfterDueBy deletion rules.

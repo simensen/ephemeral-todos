@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Simensen\EphemeralTodos\Tests\Unit;
 
 use Carbon\Carbon;
-use PHPUnit\Framework\TestCase;
+use Simensen\EphemeralTodos\Tests\TestCase;
+use Simensen\EphemeralTodos\Tests\Testing\ManagesCarbonTime;
+use Simensen\EphemeralTodos\Tests\Testing\DateTimeHelpers;
 use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\AfterExistingFor;
 use Simensen\EphemeralTodos\BeforeDueBy;
@@ -16,14 +18,11 @@ use Simensen\EphemeralTodos\Schedulish;
 
 class FinalizedDefinitionTest extends TestCase
 {
+    use ManagesCarbonTime, DateTimeHelpers;
     protected function setUp(): void
     {
-        Carbon::setTestNow('2024-01-15 10:00:00 UTC');
-    }
-
-    protected function tearDown(): void
-    {
-        Carbon::setTestNow();
+        // Use custom test time to match existing test expectations
+        $this->setUpCarbonTime('2024-01-15 10:00:00');
     }
 
     private function schedule($schedule): Schedulish

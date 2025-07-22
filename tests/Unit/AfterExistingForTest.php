@@ -7,9 +7,11 @@ namespace Simensen\EphemeralTodos\Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use Simensen\EphemeralTodos\AfterExistingFor;
 use Simensen\EphemeralTodos\Time;
+use Simensen\EphemeralTodos\Tests\Testing\RelativeTimeDataProvider;
 
 class AfterExistingForTest extends TestCase
 {
+    use RelativeTimeDataProvider;
     public function testCanCreateAfterExistingForInstance()
     {
         $afterExistingFor = AfterExistingFor::oneWeek();
@@ -69,20 +71,14 @@ class AfterExistingForTest extends TestCase
         $this->assertEquals(14400, $time->inSeconds());
     }
 
-    public function testRelativeTimeConvenienceMethods()
+    /**
+     * @dataProvider relativeTimeMethodsProvider
+     */
+    public function testRelativeTimeConvenienceMethods(string $methodName, int $expectedSeconds)
     {
-        $this->assertEquals(60, AfterExistingFor::oneMinute()->timeInSeconds());
-        $this->assertEquals(120, AfterExistingFor::twoMinutes()->timeInSeconds());
-        $this->assertEquals(300, AfterExistingFor::fiveMinutes()->timeInSeconds());
-        $this->assertEquals(600, AfterExistingFor::tenMinutes()->timeInSeconds());
-        $this->assertEquals(900, AfterExistingFor::fifteenMinutes()->timeInSeconds());
-        $this->assertEquals(1800, AfterExistingFor::thirtyMinutes()->timeInSeconds());
-        $this->assertEquals(3600, AfterExistingFor::oneHour()->timeInSeconds());
-        $this->assertEquals(3600, AfterExistingFor::sixtyMinutes()->timeInSeconds());
-        $this->assertEquals(7200, AfterExistingFor::twoHours()->timeInSeconds());
-        $this->assertEquals(86400, AfterExistingFor::oneDay()->timeInSeconds());
-        $this->assertEquals(604800, AfterExistingFor::oneWeek()->timeInSeconds());
-        $this->assertEquals(604800, AfterExistingFor::sevenDays()->timeInSeconds());
+        $method = [AfterExistingFor::class, $methodName];
+        $instance = call_user_func($method);
+        $this->assertEquals($expectedSeconds, $instance->timeInSeconds());
     }
 
     public function testChainingCompletionAwarenessWithTimeMethods()
@@ -94,19 +90,7 @@ class AfterExistingForTest extends TestCase
         $this->assertTrue($afterExistingFor->appliesWhenIncomplete());
     }
 
-    public function testDifferentTimeDurations()
-    {
-        $this->assertEquals(1200, AfterExistingFor::twentyMinutes()->timeInSeconds());
-        $this->assertEquals(2700, AfterExistingFor::fortyFiveMinutes()->timeInSeconds());
-        $this->assertEquals(5400, AfterExistingFor::ninetyMinutes()->timeInSeconds());
-        $this->assertEquals(10800, AfterExistingFor::threeHours()->timeInSeconds());
-        $this->assertEquals(14400, AfterExistingFor::fourHours()->timeInSeconds());
-        $this->assertEquals(21600, AfterExistingFor::sixHours()->timeInSeconds());
-        $this->assertEquals(43200, AfterExistingFor::twelveHours()->timeInSeconds());
-        $this->assertEquals(172800, AfterExistingFor::twoDays()->timeInSeconds());
-        $this->assertEquals(259200, AfterExistingFor::threeDays()->timeInSeconds());
-        $this->assertEquals(1209600, AfterExistingFor::twoWeeks()->timeInSeconds());
-    }
+    // Note: testDifferentTimeDurations is now covered by testRelativeTimeConvenienceMethods data provider
 
     public function testUseCaseScenarios()
     {

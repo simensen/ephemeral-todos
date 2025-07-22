@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Simensen\EphemeralTodos\Tests\Integration;
 
 use Carbon\Carbon;
-use PHPUnit\Framework\TestCase;
+use Simensen\EphemeralTodos\Tests\TestCase;
+use Simensen\EphemeralTodos\Tests\Testing\ManagesCarbonTime;
 use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\BeforeDueBy;
 use Simensen\EphemeralTodos\Definition;
@@ -14,15 +15,12 @@ use Simensen\EphemeralTodos\Todos;
 
 class CarbonTestHelpersTest extends TestCase
 {
+    use ManagesCarbonTime;
+
     protected function setUp(): void
     {
-        // Always start with a clean test time
-        Carbon::setTestNow('2024-01-15 10:00:00 UTC');
-    }
-
-    protected function tearDown(): void
-    {
-        Carbon::setTestNow();
+        // Use custom test time to match existing test expectations
+        $this->setUpCarbonTime('2024-01-15 10:00:00');
     }
 
     public function testCarbonTestNowFunctionality()
@@ -53,13 +51,13 @@ class CarbonTestHelpersTest extends TestCase
         $this->assertCount(0, $todos->readyToBeCreatedAt(Carbon::now()));
 
         // Travel to 14:00
-        Carbon::setTestNow('2024-01-15 14:00:00 UTC');
+        $this->travelTo('2024-01-15 14:00:00');
 
         // Now it should be ready
         $this->assertCount(1, $todos->readyToBeCreatedAt(Carbon::now()));
 
         // Travel to 15:00 - no longer ready (past the scheduled time)
-        Carbon::setTestNow('2024-01-15 15:00:00 UTC');
+        $this->travelTo('2024-01-15 15:00:00');
         $this->assertCount(0, $todos->readyToBeCreatedAt(Carbon::now()));
     }
 
