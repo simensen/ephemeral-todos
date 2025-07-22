@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.3] # required because php-cs-fixer does not yet work with 8.4
+        php: [8.4]
         composer-flags: [ '' ]
         stability: ['prefer-stable']
         experimental: [false]
