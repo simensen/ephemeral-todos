@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simensen\EphemeralTodos\Tests;
+namespace Simensen\EphemeralTodos\Tests\Integration;
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simensen\EphemeralTodos\Tests;
+namespace Simensen\EphemeralTodos\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Simensen\EphemeralTodos\AfterDueBy;
