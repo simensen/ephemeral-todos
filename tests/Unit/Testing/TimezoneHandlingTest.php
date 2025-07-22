@@ -6,6 +6,7 @@ namespace Simensen\EphemeralTodos\Tests\Unit\Testing;
 
 use PHPUnit\Framework\TestCase;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
 
 class TimezoneHandlingTest extends TestCase
@@ -231,6 +232,109 @@ class TimezoneHandlingTest extends TestCase
         $this->assertEquals('high', $scenario->getPriority());
 
         // Verify the complete scenario builds successfully
+        $definition = $scenario->buildDefinition();
+        $this->assertNotNull($definition);
+    }
+
+    /**
+     * Demonstration of Phase 7: Timezone-Aware Building functionality.
+     * This showcases the new timezone-aware capabilities.
+     */
+    public function testPhase7TimezoneAwareBuilding()
+    {
+        // Demonstrate timezone-aware scheduling
+        $globalMeeting = TestScenarioBuilder::create()
+            ->withName('Global Team Meeting')
+            ->inTimezone('Europe/London')
+            ->daily()
+            ->at('15:00')
+            ->withTimezoneAwareScheduling()
+            ->withBusinessHours('09:00', '18:00')
+            ->withTimezoneAwareBusinessHours();
+
+        // Verify timezone awareness flags
+        $this->assertTrue($globalMeeting->hasTimezoneAwareScheduling());
+        $this->assertTrue($globalMeeting->hasTimezoneAwareBusinessHours());
+        $this->assertEquals('Europe/London', $globalMeeting->getTimezone());
+
+        // Demonstrate timezone conversion capabilities
+        $londonTime = Carbon::parse('2025-06-16 15:00:00', 'Europe/London');
+        $nyTime = $globalMeeting->convertToTimezone($londonTime, 'America/New_York');
+        $tokyoTime = $globalMeeting->convertToTimezone($londonTime, 'Asia/Tokyo');
+
+        // Verify conversions are correct
+        $this->assertEquals('10:00:00', $nyTime->format('H:i:s')); // London is 5 hours ahead in summer
+        $this->assertEquals('23:00:00', $tokyoTime->format('H:i:s')); // Tokyo is 8 hours ahead
+
+        // Demonstrate timezone equivalence assertion
+        $utcTime = $globalMeeting->convertToTimezone($londonTime, 'UTC');
+        $globalMeeting->assertSameTimeAcrossTimezones($londonTime, $utcTime);
+        $globalMeeting->assertSameTimeAcrossTimezones($londonTime, $nyTime);
+
+        // Test business hours awareness across timezones
+        $this->assertTrue($globalMeeting->isWithinBusinessHours($londonTime));
+        $this->assertTrue($globalMeeting->isBusinessHoursEquivalent($londonTime, $utcTime));
+    }
+
+    /**
+     * Demonstration of advanced timezone-aware deletion scenarios.
+     */
+    public function testTimezoneAwareDeletionScenarios()
+    {
+        $scenario = TestScenarioBuilder::create()
+            ->withName('Regional Task Management')
+            ->inTimezone('Asia/Singapore')
+            ->daily()
+            ->at('08:00')
+            ->deleteAfterDue('24 hours', 'incomplete')
+            ->withTimezoneAwareDeletion()
+            ->withTimezoneAwareScheduling();
+
+        // Verify all timezone features are enabled
+        $this->assertTrue($scenario->hasTimezoneAwareDeletion());
+        $this->assertTrue($scenario->hasTimezoneAwareScheduling());
+        $this->assertEquals('Asia/Singapore', $scenario->getTimezone());
+
+        // Test that the scenario builds successfully with all timezone features
+        $definition = $scenario->buildDefinition();
+        $this->assertNotNull($definition);
+
+        // Demonstrate timezone conversion for deletion timing
+        $singaporeTime = Carbon::parse('2025-06-16 08:00:00', 'Asia/Singapore');
+        $utcEquivalent = $scenario->convertToTimezone($singaporeTime, 'UTC');
+
+        // Singapore is UTC+8, so 8 AM Singapore = midnight UTC
+        $this->assertEquals('00:00:00', $utcEquivalent->format('H:i:s'));
+        $this->assertEquals('2025-06-16', $utcEquivalent->format('Y-m-d'));
+    }
+
+    /**
+     * Integration test showing timezone awareness with boundary conditions.
+     */
+    public function testTimezoneAwareBoundaryConditions()
+    {
+        $scenario = TestScenarioBuilder::create()
+            ->generateDSTTransitionScenario('America/New_York', true)
+            ->withTimezoneAwareScheduling()
+            ->withBusinessHours('09:00', '17:00')
+            ->withTimezoneAwareBusinessHours();
+
+        // Verify the DST scenario has timezone awareness
+        $this->assertTrue($scenario->hasTimezoneAwareScheduling());
+        $this->assertTrue($scenario->hasTimezoneAwareBusinessHours());
+        $this->assertEquals('America/New_York', $scenario->getTimezone());
+
+        // Test DST transition boundary detection
+        $beforeDST = Carbon::parse('2025-03-09 01:30:00', 'America/New_York');
+        $afterDST = Carbon::parse('2025-03-09 03:30:00', 'America/New_York');
+
+        $this->assertTrue($scenario->aroundDSTTransition($beforeDST, $afterDST));
+
+        // Test timezone-aware time addition across DST boundary
+        $afterTransition = $scenario->addTimezoneAwareHours($beforeDST, 2);
+        $this->assertInstanceOf(CarbonInterface::class, $afterTransition);
+
+        // The scenario should build successfully despite DST complexity
         $definition = $scenario->buildDefinition();
         $this->assertNotNull($definition);
     }

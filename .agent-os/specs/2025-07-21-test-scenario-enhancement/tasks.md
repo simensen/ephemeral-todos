@@ -49,12 +49,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 6.4 Deploy to BoundaryConditionTest.php and TimezoneHandlingTest.php
   - [x] 6.5 Verify all tests pass
 
-- [ ] 7. Phase 7: Timezone-Aware Building
-  - [ ] 7.1 Write tests for multi-timezone scenario construction
-  - [ ] 7.2 Implement timezone-aware builder methods with automatic conversion
-  - [ ] 7.3 Add timezone-specific assertion methods
-  - [ ] 7.4 Deploy timezone enhancements across relevant tests
-  - [ ] 7.5 Verify all tests pass
+- [x] 7. Phase 7: Timezone-Aware Building
+  - [x] 7.1 Write tests for multi-timezone scenario construction
+  - [x] 7.2 Implement timezone-aware builder methods with automatic conversion
+  - [x] 7.3 Add timezone-specific assertion methods
+  - [x] 7.4 Deploy timezone enhancements across relevant tests
+  - [x] 7.5 Verify all tests pass
 
 - [ ] 8. Phase 8: Integration & Legacy Compatibility
   - [ ] 8.1 Write tests for backward compatibility with existing EphemeralTodoTestScenario

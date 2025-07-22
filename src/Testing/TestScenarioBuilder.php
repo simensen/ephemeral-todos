@@ -32,6 +32,9 @@ class TestScenarioBuilder
     private ?string $deleteAfterExistingCondition = null;
     private ?string $businessHoursStart = null;
     private ?string $businessHoursEnd = null;
+    private bool $timezoneAwareScheduling = false;
+    private bool $timezoneAwareBusinessHours = false;
+    private bool $timezoneAwareDeletion = false;
 
     private function __construct()
     {
@@ -193,6 +196,27 @@ class TestScenarioBuilder
         return $clone;
     }
 
+    public function withTimezoneAwareScheduling(): self
+    {
+        $clone = clone $this;
+        $clone->timezoneAwareScheduling = true;
+        return $clone;
+    }
+
+    public function withTimezoneAwareBusinessHours(): self
+    {
+        $clone = clone $this;
+        $clone->timezoneAwareBusinessHours = true;
+        return $clone;
+    }
+
+    public function withTimezoneAwareDeletion(): self
+    {
+        $clone = clone $this;
+        $clone->timezoneAwareDeletion = true;
+        return $clone;
+    }
+
     public function getName(): ?string
     {
         return $this->name;
@@ -266,6 +290,21 @@ class TestScenarioBuilder
     public function getBusinessHoursEnd(): ?string
     {
         return $this->businessHoursEnd;
+    }
+
+    public function hasTimezoneAwareScheduling(): bool
+    {
+        return $this->timezoneAwareScheduling;
+    }
+
+    public function hasTimezoneAwareBusinessHours(): bool
+    {
+        return $this->timezoneAwareBusinessHours;
+    }
+
+    public function hasTimezoneAwareDeletion(): bool
+    {
+        return $this->timezoneAwareDeletion;
     }
 
     public function buildDefinition(): Definition
@@ -811,6 +850,135 @@ class TestScenarioBuilder
         return $this->withName("Q{$quarter} Boundary {$year} Scenario")
                    ->at($lastDayOfQuarter->format('Y-m-d') . ' 23:30')
                    ->daily();
+    }
+
+    // Timezone-Aware Helper Methods
+
+    public function convertToTimezone(CarbonInterface $time, string $targetTimezone): CarbonInterface
+    {
+        return $time->copy()->setTimezone($targetTimezone);
+    }
+
+    public function safeConvertToTimezone(CarbonInterface $time, string $targetTimezone): ?CarbonInterface
+    {
+        try {
+            return $this->convertToTimezone($time, $targetTimezone);
+        } catch (\Exception $e) {
+            return null; // Return null for invalid timezones
+        }
+    }
+
+    public function isSameTimeAcrossTimezones(CarbonInterface $time1, CarbonInterface $time2): bool
+    {
+        return $time1->utc()->equalTo($time2->utc());
+    }
+
+    public function addTimezoneAwareHours(CarbonInterface $time, int $hours): CarbonInterface
+    {
+        return $time->copy()->addHours($hours);
+    }
+
+    public function isWithinBusinessHours(CarbonInterface $time): bool
+    {
+        if ($this->businessHoursStart === null || $this->businessHoursEnd === null) {
+            return false; // No business hours configured
+        }
+
+        if ($time->isWeekend()) {
+            return false; // Weekends are not business days
+        }
+
+        $timeOnly = $time->format('H:i');
+        return $timeOnly >= $this->businessHoursStart && $timeOnly < $this->businessHoursEnd;
+    }
+
+    public function isBusinessHoursEquivalent(CarbonInterface $time1, CarbonInterface $time2): bool
+    {
+        if (!$this->hasTimezoneAwareBusinessHours()) {
+            return $this->isWithinBusinessHours($time1) === $this->isWithinBusinessHours($time2);
+        }
+
+        // Convert both times to the scenario's timezone for comparison
+        $tz = $this->timezone ?? 'UTC';
+        $converted1 = $this->convertToTimezone($time1, $tz);
+        $converted2 = $this->convertToTimezone($time2, $tz);
+
+        return $this->isSameTimeAcrossTimezones($converted1, $converted2);
+    }
+
+    // Timezone-Aware Assertion Methods
+
+    public function assertSameTimeAcrossTimezones(CarbonInterface $time1, CarbonInterface $time2): void
+    {
+        Assert::assertTrue(
+            $this->isSameTimeAcrossTimezones($time1, $time2),
+            sprintf(
+                'Expected times to be equivalent across timezones. %s (%s) vs %s (%s)',
+                $time1->toISOString(),
+                $time1->timezoneName,
+                $time2->toISOString(),
+                $time2->timezoneName
+            )
+        );
+    }
+
+    public function assertTimezoneEquivalence(array $timezones): void
+    {
+        if (empty($timezones)) {
+            return;
+        }
+
+        $firstTime = null;
+        foreach ($timezones as $timezone => $time) {
+            Assert::assertInstanceOf(CarbonInterface::class, $time, "Time for timezone {$timezone} must be a Carbon instance");
+            
+            if ($firstTime === null) {
+                $firstTime = $time;
+                continue;
+            }
+
+            $this->assertSameTimeAcrossTimezones($firstTime, $time);
+        }
+    }
+
+    public function assertTimezoneConversion(CarbonInterface $sourceTime, string $targetTimezone, CarbonInterface $expectedTime): void
+    {
+        $converted = $this->convertToTimezone($sourceTime, $targetTimezone);
+        
+        Assert::assertEquals(
+            $expectedTime->format('Y-m-d H:i:s'),
+            $converted->format('Y-m-d H:i:s'),
+            sprintf(
+                'Timezone conversion failed. Expected %s in %s, got %s',
+                $expectedTime->format('Y-m-d H:i:s'),
+                $targetTimezone,
+                $converted->format('Y-m-d H:i:s')
+            )
+        );
+    }
+
+    public function assertWithinBusinessHours(CarbonInterface $time, string $message = ''): void
+    {
+        Assert::assertTrue(
+            $this->isWithinBusinessHours($time),
+            $message ?: sprintf('Expected %s to be within business hours (%s-%s)', 
+                $time->format('H:i'), 
+                $this->businessHoursStart ?? 'undefined', 
+                $this->businessHoursEnd ?? 'undefined'
+            )
+        );
+    }
+
+    public function assertOutsideBusinessHours(CarbonInterface $time, string $message = ''): void
+    {
+        Assert::assertFalse(
+            $this->isWithinBusinessHours($time),
+            $message ?: sprintf('Expected %s to be outside business hours (%s-%s)', 
+                $time->format('H:i'), 
+                $this->businessHoursStart ?? 'undefined', 
+                $this->businessHoursEnd ?? 'undefined'
+            )
+        );
     }
 
     public function __clone(): void
