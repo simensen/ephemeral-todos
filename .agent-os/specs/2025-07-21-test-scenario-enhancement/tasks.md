@@ -14,12 +14,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.4 Add immutable clone-and-modify pattern for method chaining
   - [x] 1.5 Verify all tests pass
 
-- [ ] 2. Phase 2: Fluent Builder Pattern & Preset Templates
-  - [ ] 2.1 Write tests for preset template system and static factory methods
-  - [ ] 2.2 Implement preset scenario factory methods (dailyMeetings, weeklyReview, etc.)
-  - [ ] 2.3 Add fluent configuration methods for common scenario properties
-  - [ ] 2.4 Deploy enhancement to EphemeralTodoTest.php and reduce test verbosity
-  - [ ] 2.5 Verify all tests pass
+- [x] 2. Phase 2: Fluent Builder Pattern & Preset Templates
+  - [x] 2.1 Write tests for preset template system and static factory methods
+  - [x] 2.2 Implement preset scenario factory methods (dailyMeetings, weeklyReview, etc.)
+  - [x] 2.3 Add fluent configuration methods for common scenario properties
+  - [x] 2.4 Deploy enhancement to EphemeralTodoTest.php and reduce test verbosity
+  - [x] 2.5 Verify all tests pass
 
 - [ ] 3. Phase 3: Automatic Time Calculations
   - [ ] 3.1 Write tests for relative time calculation engine

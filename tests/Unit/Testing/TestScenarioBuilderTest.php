@@ -137,4 +137,81 @@ class TestScenarioBuilderTest extends TestCase
         $this->assertEquals($original->getPriority(), $cloned->getPriority());
         $this->assertNotSame($original, $cloned);
     }
+
+    public function testCanCreateDailyMeetingPreset()
+    {
+        $scenario = TestScenarioBuilder::dailyMeeting();
+        
+        $this->assertInstanceOf(TestScenarioBuilder::class, $scenario);
+        $this->assertEquals('Daily Meeting', $scenario->getName());
+        $this->assertEquals('high', $scenario->getPriority());
+    }
+
+    public function testCanCreateWeeklyReviewPreset()
+    {
+        $scenario = TestScenarioBuilder::weeklyReview();
+        
+        $this->assertInstanceOf(TestScenarioBuilder::class, $scenario);
+        $this->assertEquals('Weekly Review', $scenario->getName());
+        $this->assertEquals('medium', $scenario->getPriority());
+    }
+
+    public function testCanCreateQuickReminderPreset()
+    {
+        $scenario = TestScenarioBuilder::quickReminder();
+        
+        $this->assertInstanceOf(TestScenarioBuilder::class, $scenario);
+        $this->assertEquals('Quick Reminder', $scenario->getName());
+        $this->assertEquals('low', $scenario->getPriority());
+    }
+
+    public function testCanCustomizePresetTemplates()
+    {
+        $scenario = TestScenarioBuilder::dailyMeeting()
+            ->withName('Team Standup')
+            ->withPriority('medium');
+        
+        $this->assertEquals('Team Standup', $scenario->getName());
+        $this->assertEquals('medium', $scenario->getPriority());
+    }
+
+    public function testPresetTemplatesAreImmutable()
+    {
+        $original = TestScenarioBuilder::dailyMeeting();
+        $modified = $original->withName('Modified Meeting');
+        
+        $this->assertNotSame($original, $modified);
+        $this->assertEquals('Daily Meeting', $original->getName());
+        $this->assertEquals('Modified Meeting', $modified->getName());
+    }
+
+    public function testCanCreateSimpleReminderWithTimezone()
+    {
+        $scenario = TestScenarioBuilder::create()
+            ->withName('Timezone Test')
+            ->withTimezone('America/New_York');
+        
+        $this->assertEquals('America/New_York', $scenario->getTimezone());
+    }
+
+    public function testCanSetDailySchedule()
+    {
+        $scenario = TestScenarioBuilder::create()
+            ->daily()
+            ->at('09:30');
+        
+        $this->assertEquals('daily', $scenario->getScheduleType());
+        $this->assertEquals('09:30', $scenario->getScheduleTime());
+    }
+
+    public function testCanSetWeeklySchedule()
+    {
+        $scenario = TestScenarioBuilder::create()
+            ->weekly('monday')
+            ->at('14:00');
+        
+        $this->assertEquals('weekly', $scenario->getScheduleType());
+        $this->assertEquals('monday', $scenario->getScheduleDay());
+        $this->assertEquals('14:00', $scenario->getScheduleTime());
+    }
 }
