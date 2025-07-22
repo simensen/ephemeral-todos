@@ -30,6 +30,8 @@ class TestScenarioBuilder
     private ?string $deleteAfterDueCondition = null;
     private ?string $deleteAfterExistingInterval = null;
     private ?string $deleteAfterExistingCondition = null;
+    private ?string $businessHoursStart = null;
+    private ?string $businessHoursEnd = null;
 
     private function __construct()
     {
@@ -176,6 +178,21 @@ class TestScenarioBuilder
         return $clone;
     }
 
+    public function withBusinessHours(string $startTime, string $endTime): self
+    {
+        $clone = clone $this;
+        $clone->businessHoursStart = $startTime;
+        $clone->businessHoursEnd = $endTime;
+        return $clone;
+    }
+
+    public function inTimezone(string $timezone): self
+    {
+        $clone = clone $this;
+        $clone->timezone = $timezone;
+        return $clone;
+    }
+
     public function getName(): ?string
     {
         return $this->name;
@@ -239,6 +256,16 @@ class TestScenarioBuilder
     public function getDeleteAfterExistingCondition(): ?string
     {
         return $this->deleteAfterExistingCondition;
+    }
+
+    public function getBusinessHoursStart(): ?string
+    {
+        return $this->businessHoursStart;
+    }
+
+    public function getBusinessHoursEnd(): ?string
+    {
+        return $this->businessHoursEnd;
     }
 
     public function buildDefinition(): Definition
@@ -609,6 +636,181 @@ class TestScenarioBuilder
             'default' => null,
             default => null,
         };
+    }
+
+    // Boundary Condition Helper Methods
+
+    public function crossesDayBoundary(CarbonInterface $startTime, CarbonInterface $endTime): bool
+    {
+        return $startTime->format('Y-m-d') !== $endTime->format('Y-m-d');
+    }
+
+    public function crossesMonthBoundary(CarbonInterface $startTime, CarbonInterface $endTime): bool
+    {
+        return $startTime->format('Y-m') !== $endTime->format('Y-m');
+    }
+
+    public function crossesYearBoundary(CarbonInterface $startTime, CarbonInterface $endTime): bool
+    {
+        return $startTime->format('Y') !== $endTime->format('Y');
+    }
+
+    public function crossesQuarterBoundary(CarbonInterface $startTime, CarbonInterface $endTime): bool
+    {
+        $startQuarter = (int) ceil($startTime->month / 3);
+        $endQuarter = (int) ceil($endTime->month / 3);
+        
+        return $startTime->year !== $endTime->year || $startQuarter !== $endQuarter;
+    }
+
+    public function crossesWeekendBoundary(CarbonInterface $startTime, CarbonInterface $endTime): bool
+    {
+        $startIsWeekend = $startTime->isWeekend();
+        $endIsWeekend = $endTime->isWeekend();
+        
+        return $startIsWeekend !== $endIsWeekend;
+    }
+
+    public function crossesBusinessHourBoundary(CarbonInterface $startTime, CarbonInterface $endTime): bool
+    {
+        // Skip weekend days - business hours don't apply
+        if ($startTime->isWeekend() && $endTime->isWeekend()) {
+            return false;
+        }
+        
+        if ($this->businessHoursStart === null || $this->businessHoursEnd === null) {
+            return false; // No business hours configured
+        }
+        
+        $startTimeOnly = $startTime->format('H:i');
+        $endTimeOnly = $endTime->format('H:i');
+        
+        $startInBusinessHours = $startTimeOnly >= $this->businessHoursStart && $startTimeOnly < $this->businessHoursEnd;
+        $endInBusinessHours = $endTimeOnly >= $this->businessHoursStart && $endTimeOnly < $this->businessHoursEnd;
+        
+        return $startInBusinessHours !== $endInBusinessHours;
+    }
+
+    public function aroundDSTTransition(CarbonInterface $startTime, CarbonInterface $endTime): bool
+    {
+        // Only check for DST in timezones that actually have DST transitions
+        $timezone = $startTime->timezone ?? $this->timezone ?? 'UTC';
+        
+        if (is_string($timezone)) {
+            $timezone = new \DateTimeZone($timezone);
+        }
+        
+        // Get DST transitions for the year(s) in question
+        $startYear = $startTime->year;
+        $endYear = $endTime->year;
+        
+        $transitions = [];
+        for ($year = $startYear; $year <= $endYear; $year++) {
+            $yearTransitions = $timezone->getTransitions(
+                mktime(0, 0, 0, 1, 1, $year),
+                mktime(23, 59, 59, 12, 31, $year)
+            );
+            $transitions = array_merge($transitions, $yearTransitions);
+        }
+        
+        // Check if the time range spans any DST transition
+        foreach ($transitions as $transition) {
+            $transitionTime = Carbon::createFromTimestamp($transition['ts']);
+            
+            // Check if transition falls between start and end times
+            if ($transitionTime->between($startTime, $endTime)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    public function isLeapYear(int $year): bool
+    {
+        return Carbon::create($year, 1, 1)->isLeapYear();
+    }
+
+    public function generateLeapYearScenario(int $year = null): self
+    {
+        $year = $year ?? Carbon::now()->year;
+        
+        if (!$this->isLeapYear($year)) {
+            $year = $year + (4 - ($year % 4)); // Find next leap year
+        }
+        
+        return $this->withName("Leap Year {$year} Scenario")
+                   ->at("{$year}-02-29")
+                   ->daily();
+    }
+
+    public function generateMonthBoundaryScenario(int $month = null, int $year = null): self
+    {
+        $month = $month ?? Carbon::now()->month;
+        $year = $year ?? Carbon::now()->year;
+        
+        $lastDayOfMonth = Carbon::create($year, $month, 1)->endOfMonth()->day;
+        
+        return $this->withName("Month Boundary {$year}-{$month} Scenario")
+                   ->at("{$year}-{$month}-{$lastDayOfMonth} 23:30")
+                   ->daily();
+    }
+
+    public function generateDSTTransitionScenario(string $timezone = 'America/New_York', bool $springForward = true): self
+    {
+        $tz = new \DateTimeZone($timezone);
+        $year = Carbon::now()->year;
+        
+        $transitions = $tz->getTransitions(
+            mktime(0, 0, 0, 1, 1, $year),
+            mktime(23, 59, 59, 12, 31, $year)
+        );
+        
+        $targetTransition = null;
+        foreach ($transitions as $transition) {
+            if ($transition['isdst'] === $springForward) {
+                $targetTransition = $transition;
+                break;
+            }
+        }
+        
+        if ($targetTransition === null) {
+            // Fallback to standard DST dates
+            $transitionDate = $springForward ? "{$year}-03-09 01:30:00" : "{$year}-11-02 01:30:00";
+        } else {
+            $transitionTime = Carbon::createFromTimestamp($targetTransition['ts']);
+            $transitionDate = $transitionTime->subHour()->format('Y-m-d H:i:s');
+        }
+        
+        $transitionType = $springForward ? 'Spring Forward' : 'Fall Back';
+        
+        return $this->withName("DST {$transitionType} Scenario")
+                   ->inTimezone($timezone)
+                   ->at($transitionDate)
+                   ->daily();
+    }
+
+    public function generateYearBoundaryScenario(int $year = null): self
+    {
+        $year = $year ?? Carbon::now()->year;
+        
+        return $this->withName("Year Boundary {$year} Scenario")
+                   ->at("{$year}-12-31 23:45")
+                   ->daily();
+    }
+
+    public function generateQuarterBoundaryScenario(int $quarter = 1, int $year = null): self
+    {
+        $year = $year ?? Carbon::now()->year;
+        
+        $quarterEndMonths = [3, 6, 9, 12];
+        $endMonth = $quarterEndMonths[$quarter - 1] ?? 3;
+        
+        $lastDayOfQuarter = Carbon::create($year, $endMonth, 1)->endOfMonth();
+        
+        return $this->withName("Q{$quarter} Boundary {$year} Scenario")
+                   ->at($lastDayOfQuarter->format('Y-m-d') . ' 23:30')
+                   ->daily();
     }
 
     public function __clone(): void

@@ -42,12 +42,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 5.4 Deploy to CompletionAwareTest.php and AfterDueByTest.php
   - [x] 5.5 Verify all tests pass
 
-- [ ] 6. Phase 6: Boundary Condition Helpers
-  - [ ] 6.1 Write tests for DST transitions and timezone boundary testing
-  - [ ] 6.2 Implement boundary condition helper methods (crossesDayBoundary, aroundDSTTransition)
-  - [ ] 6.3 Add edge case scenario generators for leap years and month boundaries
-  - [ ] 6.4 Deploy to BoundaryConditionTest.php and TimezoneHandlingTest.php
-  - [ ] 6.5 Verify all tests pass
+- [x] 6. Phase 6: Boundary Condition Helpers
+  - [x] 6.1 Write tests for DST transitions and timezone boundary testing
+  - [x] 6.2 Implement boundary condition helper methods (crossesDayBoundary, aroundDSTTransition)
+  - [x] 6.3 Add edge case scenario generators for leap years and month boundaries
+  - [x] 6.4 Deploy to BoundaryConditionTest.php and TimezoneHandlingTest.php
+  - [x] 6.5 Verify all tests pass
 
 - [ ] 7. Phase 7: Timezone-Aware Building
   - [ ] 7.1 Write tests for multi-timezone scenario construction
