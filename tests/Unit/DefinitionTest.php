@@ -56,60 +56,9 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
     }
 
-    public function testWithHighPrioritySetsPriorityTo4(): void
-    {
-        $definition = Definition::define()
-            ->withName('High Priority Task')
-            ->withHighPriority()
-            ->due(Schedule::create()->daily());
-
-        $finalized = $definition->finalize();
-        $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
-    }
-
-    public function testWithMediumPrioritySetsPriorityTo3(): void
-    {
-        $definition = Definition::define()
-            ->withName('Medium Priority Task')
-            ->withMediumPriority()
-            ->due(Schedule::create()->daily());
-
-        $finalized = $definition->finalize();
-        $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
-    }
-
-    public function testWithLowPrioritySetsPriorityTo2(): void
-    {
-        $definition = Definition::define()
-            ->withName('Low Priority Task')
-            ->withLowPriority()
-            ->due(Schedule::create()->daily());
-
-        $finalized = $definition->finalize();
-        $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
-    }
-
-    public function testWithNoPrioritySetsPriorityTo1(): void
-    {
-        $definition = Definition::define()
-            ->withName('No Priority Task')
-            ->withNoPriority()
-            ->due(Schedule::create()->daily());
-
-        $finalized = $definition->finalize();
-        $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
-    }
-
-    public function testWithDefaultPrioritySetsPriorityToNull(): void
-    {
-        $definition = Definition::define()
-            ->withName('Default Priority Task')
-            ->withDefaultPriority()
-            ->due(Schedule::create()->daily());
-
-        $finalized = $definition->finalize();
-        $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
-    }
+    // NOTE: Individual priority test methods have been replaced by the parameterized
+    // testPriorityMethods method using the priorityLevelsProvider data provider.
+    // This eliminates code duplication while maintaining comprehensive test coverage.
 
     public function testCreateMethodWithSchedule(): void
     {
@@ -323,5 +272,38 @@ class DefinitionTest extends TestCase
 
         $finalized = $definition->finalize();
         $this->assertInstanceOf(FinalizedDefinition::class, $finalized);
+    }
+
+    /**
+     * Data provider for priority testing.
+     * 
+     * @return array Array of [priority_description, method_name, expected_behavior_description]
+     */
+    public static function priorityLevelsProvider(): array
+    {
+        return [
+            ['High Priority', 'withHighPriority', 'Sets priority to highest level (4)'],
+            ['Medium Priority', 'withMediumPriority', 'Sets priority to medium level (3)'],
+            ['Low Priority', 'withLowPriority', 'Sets priority to low level (2)'],
+            ['No Priority', 'withNoPriority', 'Sets priority to minimum level (1)'],
+            ['Default Priority', 'withDefaultPriority', 'Sets priority to default (null)'],
+        ];
+    }
+
+    /**
+     * Test that priority methods can be applied and result in successful finalization.
+     * 
+     * @dataProvider priorityLevelsProvider
+     */
+    public function testPriorityMethods(string $description, string $methodName, string $behaviorDescription): void
+    {
+        $definition = Definition::define()
+            ->withName($description . ' Task')
+            ->{$methodName}()
+            ->due(Schedule::create()->daily());
+
+        $finalized = $definition->finalize();
+        $this->assertInstanceOf(FinalizedDefinition::class, $finalized, 
+            "Definition with {$description} should finalize successfully. {$behaviorDescription}");
     }
 }

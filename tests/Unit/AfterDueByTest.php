@@ -11,10 +11,11 @@ use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
 use Simensen\EphemeralTodos\Tests\Testing\RelativeTimeDataProvider;
 use Simensen\EphemeralTodos\Tests\Testing\AssertsCompletionAwareness;
 use Simensen\EphemeralTodos\Tests\Testing\AssertsImmutability;
+use Simensen\EphemeralTodos\Tests\Testing\TestScenarioBuilderHelpers;
 
 class AfterDueByTest extends TestCase
 {
-    use RelativeTimeDataProvider, AssertsCompletionAwareness, AssertsImmutability;
+    use RelativeTimeDataProvider, AssertsCompletionAwareness, AssertsImmutability, TestScenarioBuilderHelpers;
     public function testCanCreateAfterDueByInstance()
     {
         $afterDueBy = AfterDueBy::oneDay();
@@ -81,16 +82,15 @@ class AfterDueByTest extends TestCase
      */
     public function testTestScenarioBuilderAfterDueByIntegration()
     {
-        // Demonstrate TestScenarioBuilder creating AfterDueBy rules from intervals
-        $scenario = TestScenarioBuilder::create()
-            ->withName('AfterDueBy Demo')
-            ->daily()
-            ->at('09:00')
+        // Demonstrate TestScenarioBuilder creating AfterDueBy rules from intervals using helper
+        $scenario = $this->createBasicScenario('AfterDueBy Demo', ['time' => '09:00'])
             ->deleteAfterDue('2 hours', 'complete');
 
-        // Verify the interval conversion matches AfterDueBy values
-        $this->assertEquals('2 hours', $scenario->getDeleteAfterDueInterval());
-        $this->assertEquals('complete', $scenario->getDeleteAfterDueCondition());
+        // Verify configuration using helper
+        $this->assertScenarioProperties($scenario, [
+            'deleteAfterDueInterval' => '2 hours',
+            'deleteAfterDueCondition' => 'complete'
+        ]);
         
         // Test that interval conversion aligns with AfterDueBy time values
         $expectedSeconds = AfterDueBy::twoHours()->timeInSeconds();
@@ -142,10 +142,11 @@ class AfterDueByTest extends TestCase
         $this->assertTrue($incompleteOnlyAfterDueBy->appliesWhenIncomplete());
         $this->assertFalse($incompleteOnlyAfterDueBy->appliesAlways());
 
-        // Verify TestScenarioBuilder validates these same states
+        // Verify TestScenarioBuilder validates these same states using helper
         $scenario = TestScenarioBuilder::create();
-        $this->assertTrue($scenario->isValidCompletionState('complete'));
-        $this->assertTrue($scenario->isValidCompletionState('incomplete'));
-        $this->assertTrue($scenario->isValidCompletionState('either'));
+        $this->assertCompletionStateValidation($scenario, 
+            ['complete', 'incomplete', 'either'], 
+            []
+        );
     }
 }

@@ -10,10 +10,11 @@ use Simensen\EphemeralTodos\AfterExistingFor;
 use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
 use Simensen\EphemeralTodos\Tests\Testing\AssertsCompletionAwareness;
 use Simensen\EphemeralTodos\Tests\Testing\AssertsImmutability;
+use Simensen\EphemeralTodos\Tests\Testing\TestScenarioBuilderHelpers;
 
 class CompletionAwareTest extends TestCase
 {
-    use AssertsCompletionAwareness, AssertsImmutability;
+    use AssertsCompletionAwareness, AssertsImmutability, TestScenarioBuilderHelpers;
     public function testDefaultCompletionAwarenessAppliesToAll()
     {
         $afterDueBy = AfterDueBy::oneDay();
@@ -107,29 +108,33 @@ class CompletionAwareTest extends TestCase
      */
     public function testTestScenarioBuilderDeletionRuleConfiguration()
     {
-        // Demonstrate fluent deletion rule configuration
-        $scenario = TestScenarioBuilder::create()
-            ->withName('Completion Aware Todo')
-            ->daily()
-            ->at('10:00')
-            ->deleteAfterDue('1 day', 'complete')
-            ->deleteAfterExisting('1 week', 'incomplete');
+        // Demonstrate fluent deletion rule configuration using helper
+        $scenario = $this->createDeletionTestScenario(
+            'Completion Aware Todo',
+            '1 day',
+            '1 week',
+            'incomplete'
+        )->deleteAfterDue('1 day', 'complete'); // Override after due condition
 
-        // Verify deletion rule properties are configured correctly
-        $this->assertEquals('1 day', $scenario->getDeleteAfterDueInterval());
-        $this->assertEquals('complete', $scenario->getDeleteAfterDueCondition());
-        $this->assertEquals('1 week', $scenario->getDeleteAfterExistingInterval());
-        $this->assertEquals('incomplete', $scenario->getDeleteAfterExistingCondition());
+        // Verify deletion rule properties are configured correctly using helper
+        $this->assertDeletionRules(
+            $scenario,
+            '1 day',
+            'complete',
+            '1 week',
+            'incomplete'
+        );
 
-        // Test interval conversion utility
-        $this->assertEquals(86400, $scenario->convertIntervalToSeconds('1 day'));
-        $this->assertEquals(604800, $scenario->convertIntervalToSeconds('1 week'));
+        // Test utility methods using helpers
+        $this->assertIntervalConversion($scenario, [
+            '1 day' => 86400,
+            '1 week' => 604800
+        ]);
 
-        // Test completion state validation
-        $this->assertTrue($scenario->isValidCompletionState('complete'));
-        $this->assertTrue($scenario->isValidCompletionState('incomplete'));
-        $this->assertTrue($scenario->isValidCompletionState('either'));
-        $this->assertFalse($scenario->isValidCompletionState('maybe'));
+        $this->assertCompletionStateValidation($scenario, 
+            ['complete', 'incomplete', 'either'],
+            ['maybe']
+        );
     }
 
     /**
@@ -137,13 +142,14 @@ class CompletionAwareTest extends TestCase
      */
     public function testDeletionRuleOverrideBehavior()
     {
-        $scenario = TestScenarioBuilder::create()
-            ->withName('Override Test')
+        $scenario = $this->createBasicScenario('Override Test')
             ->deleteAfterDue('1 hour', 'complete')
             ->deleteAfterDue('1 day', 'incomplete'); // Should override previous
 
-        // Last configuration should win
-        $this->assertEquals('1 day', $scenario->getDeleteAfterDueInterval());
-        $this->assertEquals('incomplete', $scenario->getDeleteAfterDueCondition());
+        // Last configuration should win - verify using helper
+        $this->assertScenarioProperties($scenario, [
+            'deleteAfterDueInterval' => '1 day',
+            'deleteAfterDueCondition' => 'incomplete'
+        ]);
     }
 }
