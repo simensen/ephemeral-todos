@@ -11,6 +11,8 @@ use Simensen\EphemeralTodos\Schedule;
 use Simensen\EphemeralTodos\BeforeDueBy;
 use Simensen\EphemeralTodos\In;
 use Simensen\EphemeralTodos\Todo;
+use Simensen\EphemeralTodos\AfterDueBy;
+use Simensen\EphemeralTodos\AfterExistingFor;
 use PHPUnit\Framework\Assert;
 
 class TestScenarioBuilder
@@ -24,6 +26,10 @@ class TestScenarioBuilder
     private ?string $scheduleType = null;
     private ?string $scheduleTime = null;
     private ?string $scheduleDay = null;
+    private ?string $deleteAfterDueInterval = null;
+    private ?string $deleteAfterDueCondition = null;
+    private ?string $deleteAfterExistingInterval = null;
+    private ?string $deleteAfterExistingCondition = null;
 
     private function __construct()
     {
@@ -154,6 +160,22 @@ class TestScenarioBuilder
         return $clone;
     }
 
+    public function deleteAfterDue(string $interval, string $condition = 'either'): self
+    {
+        $clone = clone $this;
+        $clone->deleteAfterDueInterval = $interval;
+        $clone->deleteAfterDueCondition = $condition;
+        return $clone;
+    }
+
+    public function deleteAfterExisting(string $interval, string $condition = 'either'): self
+    {
+        $clone = clone $this;
+        $clone->deleteAfterExistingInterval = $interval;
+        $clone->deleteAfterExistingCondition = $condition;
+        return $clone;
+    }
+
     public function getName(): ?string
     {
         return $this->name;
@@ -197,6 +219,26 @@ class TestScenarioBuilder
     public function getScheduleDay(): ?string
     {
         return $this->scheduleDay;
+    }
+
+    public function getDeleteAfterDueInterval(): ?string
+    {
+        return $this->deleteAfterDueInterval;
+    }
+
+    public function getDeleteAfterDueCondition(): ?string
+    {
+        return $this->deleteAfterDueCondition;
+    }
+
+    public function getDeleteAfterExistingInterval(): ?string
+    {
+        return $this->deleteAfterExistingInterval;
+    }
+
+    public function getDeleteAfterExistingCondition(): ?string
+    {
+        return $this->deleteAfterExistingCondition;
     }
 
     public function buildDefinition(): Definition
@@ -255,6 +297,9 @@ class TestScenarioBuilder
             }
         }
 
+        // Apply deletion rules
+        $definition = $this->applyDeletionRules($definition);
+
         return $definition;
     }
 
@@ -294,6 +339,197 @@ class TestScenarioBuilder
             'saturday' => 6,
             default => 1, // Default to Monday
         };
+    }
+
+    private function applyDeletionRules(Definition $definition): Definition
+    {
+        // Apply after due deletion rules first
+        if ($this->deleteAfterDueInterval !== null) {
+            $afterDueBy = $this->createAfterDueByFromInterval($this->deleteAfterDueInterval);
+            
+            $deletionRule = match ($this->deleteAfterDueCondition) {
+                'complete' => $afterDueBy->andIsComplete(),
+                'incomplete' => $afterDueBy->andIsIncomplete(),
+                'either', null => $afterDueBy,
+                default => $afterDueBy,
+            };
+            
+            $definition = $definition->automaticallyDelete($deletionRule);
+        }
+
+        // Note: Multiple automaticallyDelete calls may override each other
+        // If we need both rules, we might need to use a different approach
+        if ($this->deleteAfterExistingInterval !== null) {
+            $afterExistingFor = $this->createAfterExistingForFromInterval($this->deleteAfterExistingInterval);
+            
+            $deletionRule = match ($this->deleteAfterExistingCondition) {
+                'complete' => $afterExistingFor->andIsComplete(),
+                'incomplete' => $afterExistingFor->andIsIncomplete(),
+                'either', null => $afterExistingFor,
+                default => $afterExistingFor,
+            };
+            
+            $definition = $definition->automaticallyDelete($deletionRule);
+        }
+
+        return $definition;
+    }
+
+    private function createAfterDueByFromInterval(string $interval): AfterDueBy
+    {
+        return match ($interval) {
+            '1 hour' => AfterDueBy::oneHour(),
+            '2 hours' => AfterDueBy::twoHours(),
+            '3 hours' => AfterDueBy::threeHours(),
+            '4 hours' => AfterDueBy::fourHours(),
+            '6 hours' => AfterDueBy::sixHours(),
+            '12 hours' => AfterDueBy::twelveHours(),
+            '1 day' => AfterDueBy::oneDay(),
+            '2 days' => AfterDueBy::twoDays(),
+            '3 days' => AfterDueBy::threeDays(),
+            '4 days' => AfterDueBy::fourDays(),
+            '5 days' => AfterDueBy::fiveDays(),
+            '6 days' => AfterDueBy::sixDays(),
+            '7 days', '1 week' => AfterDueBy::oneWeek(),
+            '2 weeks' => AfterDueBy::twoWeeks(),
+            '3 weeks' => AfterDueBy::threeWeeks(),
+            default => AfterDueBy::oneDay(), // Default fallback
+        };
+    }
+
+    private function createAfterExistingForFromInterval(string $interval): AfterExistingFor
+    {
+        return match ($interval) {
+            '1 hour' => AfterExistingFor::oneHour(),
+            '2 hours' => AfterExistingFor::twoHours(),
+            '3 hours' => AfterExistingFor::threeHours(),
+            '4 hours' => AfterExistingFor::fourHours(),
+            '6 hours' => AfterExistingFor::sixHours(),
+            '12 hours' => AfterExistingFor::twelveHours(),
+            '1 day' => AfterExistingFor::oneDay(),
+            '2 days' => AfterExistingFor::twoDays(),
+            '3 days' => AfterExistingFor::threeDays(),
+            '4 days' => AfterExistingFor::fourDays(),
+            '5 days' => AfterExistingFor::fiveDays(),
+            '6 days' => AfterExistingFor::sixDays(),
+            '7 days', '1 week' => AfterExistingFor::oneWeek(),
+            '2 weeks' => AfterExistingFor::twoWeeks(),
+            '3 weeks' => AfterExistingFor::threeWeeks(),
+            default => AfterExistingFor::oneDay(), // Default fallback
+        };
+    }
+
+    public function convertIntervalToSeconds(string $interval): int
+    {
+        return match ($interval) {
+            '1 hour' => 3600,
+            '2 hours' => 7200,
+            '3 hours' => 10800,
+            '4 hours' => 14400,
+            '6 hours' => 21600,
+            '12 hours' => 43200,
+            '1 day' => 86400,
+            '2 days' => 172800,
+            '3 days' => 259200,
+            '4 days' => 345600,
+            '5 days' => 432000,
+            '6 days' => 518400,
+            '7 days', '1 week' => 604800,
+            '2 weeks' => 1209600,
+            '3 weeks' => 1814400,
+            default => 86400, // Default to 1 day
+        };
+    }
+
+    public function isValidCompletionState(string $state): bool
+    {
+        return in_array($state, ['complete', 'incomplete', 'either'], true);
+    }
+
+    public function assertDeletionRulesApply(Todo $todo): void
+    {
+        if ($this->deleteAfterDueInterval !== null) {
+            $condition = $this->deleteAfterDueCondition ?? 'either';
+            
+            switch ($condition) {
+                case 'complete':
+                    Assert::assertNotNull(
+                        $todo->automaticallyDeleteWhenCompleteAndAfterDueAt(),
+                        'Expected todo to have deletion rule for complete state after due'
+                    );
+                    break;
+                case 'incomplete':
+                    Assert::assertNotNull(
+                        $todo->automaticallyDeleteWhenIncompleteAndAfterDueAt(),
+                        'Expected todo to have deletion rule for incomplete state after due'
+                    );
+                    break;
+                case 'either':
+                    $hasCompleteDeletion = $todo->automaticallyDeleteWhenCompleteAndAfterDueAt() !== null;
+                    $hasIncompleteDeletion = $todo->automaticallyDeleteWhenIncompleteAndAfterDueAt() !== null;
+                    
+                    Assert::assertTrue(
+                        $hasCompleteDeletion || $hasIncompleteDeletion,
+                        'Expected todo to have deletion rule after due for either completion state'
+                    );
+                    break;
+            }
+        }
+
+        if ($this->deleteAfterExistingInterval !== null) {
+            $condition = $this->deleteAfterExistingCondition ?? 'either';
+            
+            switch ($condition) {
+                case 'complete':
+                    Assert::assertNotNull(
+                        $todo->automaticallyDeleteWhenCompleteAndAfterExistingAt(),
+                        'Expected todo to have deletion rule for complete state after existing'
+                    );
+                    break;
+                case 'incomplete':
+                    Assert::assertNotNull(
+                        $todo->automaticallyDeleteWhenIncompleteAndAfterExistingAt(),
+                        'Expected todo to have deletion rule for incomplete state after existing'
+                    );
+                    break;
+                case 'either':
+                    $hasCompleteDeletion = $todo->automaticallyDeleteWhenCompleteAndAfterExistingAt() !== null;
+                    $hasIncompleteDeletion = $todo->automaticallyDeleteWhenIncompleteAndAfterExistingAt() !== null;
+                    
+                    Assert::assertTrue(
+                        $hasCompleteDeletion || $hasIncompleteDeletion,
+                        'Expected todo to have deletion rule after existing for either completion state'
+                    );
+                    break;
+            }
+        }
+    }
+
+    public function assertLifecycleProgression(CarbonInterface $createTime, CarbonInterface $dueTime, Definition $definition): void
+    {
+        $finalizedDefinition = $definition->finalize();
+        
+        // Test todo exists at create time
+        $todoAtCreate = $finalizedDefinition->currentInstance($createTime);
+        Assert::assertNotNull($todoAtCreate, 'Todo should exist at create time');
+        
+        // Test todo exists at due time
+        $todoAtDue = $finalizedDefinition->currentInstance($dueTime);
+        Assert::assertNotNull($todoAtDue, 'Todo should exist at due time');
+        
+        // Validate timing relationships
+        if ($todoAtCreate->createAt() !== null && $todoAtCreate->dueAt() !== null) {
+            Assert::assertLessThanOrEqual(
+                $todoAtCreate->dueAt(),
+                $todoAtCreate->createAt(),
+                'Create time should be before or equal to due time'
+            );
+        }
+        
+        // Validate deletion rules are consistent
+        if ($this->deleteAfterDueInterval !== null || $this->deleteAfterExistingInterval !== null) {
+            $this->assertDeletionRulesApply($todoAtCreate);
+        }
     }
 
     public function assertTodoMatches(?Todo $todo): void

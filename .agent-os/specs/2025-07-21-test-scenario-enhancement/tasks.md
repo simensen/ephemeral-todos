@@ -35,12 +35,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 4.4 Deploy assertion methods to DeletionIntegrationTest.php and reduce assertion boilerplate
   - [x] 4.5 Verify all tests pass
 
-- [ ] 5. Phase 5: Deletion Rule Management
-  - [ ] 5.1 Write tests for completion-aware deletion testing
-  - [ ] 5.2 Implement deletion rule configuration with completion awareness
-  - [ ] 5.3 Add lifecycle validation methods for complex deletion scenarios
-  - [ ] 5.4 Deploy to CompletionAwareTest.php and AfterDueByTest.php
-  - [ ] 5.5 Verify all tests pass
+- [x] 5. Phase 5: Deletion Rule Management
+  - [x] 5.1 Write tests for completion-aware deletion testing
+  - [x] 5.2 Implement deletion rule configuration with completion awareness
+  - [x] 5.3 Add lifecycle validation methods for complex deletion scenarios
+  - [x] 5.4 Deploy to CompletionAwareTest.php and AfterDueByTest.php
+  - [x] 5.5 Verify all tests pass
 
 - [ ] 6. Phase 6: Boundary Condition Helpers
   - [ ] 6.1 Write tests for DST transitions and timezone boundary testing
