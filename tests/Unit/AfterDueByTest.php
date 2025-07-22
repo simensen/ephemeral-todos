@@ -9,10 +9,12 @@ use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\Time;
 use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
 use Simensen\EphemeralTodos\Tests\Testing\RelativeTimeDataProvider;
+use Simensen\EphemeralTodos\Tests\Testing\AssertsCompletionAwareness;
+use Simensen\EphemeralTodos\Tests\Testing\AssertsImmutability;
 
 class AfterDueByTest extends TestCase
 {
-    use RelativeTimeDataProvider;
+    use RelativeTimeDataProvider, AssertsCompletionAwareness, AssertsImmutability;
     public function testCanCreateAfterDueByInstance()
     {
         $afterDueBy = AfterDueBy::oneDay();
@@ -24,43 +26,23 @@ class AfterDueByTest extends TestCase
     public function testHasCompletionAwareMethods()
     {
         $afterDueBy = AfterDueBy::oneDay();
-
-        $this->assertTrue($afterDueBy->appliesWhenComplete());
-        $this->assertTrue($afterDueBy->appliesWhenIncomplete());
-        $this->assertTrue($afterDueBy->appliesAlways());
+        $this->assertHasCompletionAwareMethods($afterDueBy);
     }
 
     public function testCanConfigureCompletionAwareness()
     {
         $afterDueBy = AfterDueBy::oneDay();
-
-        $completeOnly = $afterDueBy->andIsComplete();
-        $this->assertTrue($completeOnly->appliesWhenComplete());
-        $this->assertFalse($completeOnly->appliesWhenIncomplete());
-        $this->assertFalse($completeOnly->appliesAlways());
-
-        $incompleteOnly = $afterDueBy->andIsIncomplete();
-        $this->assertFalse($incompleteOnly->appliesWhenComplete());
-        $this->assertTrue($incompleteOnly->appliesWhenIncomplete());
-        $this->assertFalse($incompleteOnly->appliesAlways());
-
-        $whetherCompletedOrNot = $afterDueBy->whetherCompletedOrNot();
-        $this->assertTrue($whetherCompletedOrNot->appliesWhenComplete());
-        $this->assertTrue($whetherCompletedOrNot->appliesWhenIncomplete());
-        $this->assertTrue($whetherCompletedOrNot->appliesAlways());
+        $this->assertCanConfigureCompletionAwareness($afterDueBy);
     }
 
     public function testCompletionAwareMethodsReturnNewInstances()
     {
         $original = AfterDueBy::oneDay();
-        $complete = $original->andIsComplete();
-        $incomplete = $original->andIsIncomplete();
-        $whetherCompletedOrNot = $original->whetherCompletedOrNot();
-
-        $this->assertNotSame($original, $complete);
-        $this->assertNotSame($original, $incomplete);
-        $this->assertNotSame($original, $whetherCompletedOrNot);
-        $this->assertNotSame($complete, $incomplete);
+        $this->assertMultipleMethodsReturnNewInstances($original, [
+            'andIsComplete',
+            'andIsIncomplete', 
+            'whetherCompletedOrNot'
+        ]);
     }
 
     public function testCanConvertToTimeObject()

@@ -13,9 +13,11 @@ use Simensen\EphemeralTodos\FinalizedDefinition;
 use Simensen\EphemeralTodos\In;
 use Simensen\EphemeralTodos\Schedule;
 use Simensen\EphemeralTodos\Tests\TestCase;
+use Simensen\EphemeralTodos\Tests\Testing\AssertsImmutability;
 
 class DefinitionTest extends TestCase
 {
+    use AssertsImmutability;
     public function testDefineCreatesNewInstance(): void
     {
         $definition = Definition::define();
@@ -26,14 +28,12 @@ class DefinitionTest extends TestCase
     public function testFluentBuilderPatternReturnsNewInstances(): void
     {
         $original = Definition::define();
-        $withName = $original->withName('Test Task');
-        $withDescription = $withName->withDescription('Test description');
-        $withPriority = $withDescription->withHighPriority();
-
-        // Each method should return a new instance
-        $this->assertNotSame($original, $withName);
-        $this->assertNotSame($withName, $withDescription);
-        $this->assertNotSame($withDescription, $withPriority);
+        
+        $this->assertMultipleMethodsReturnNewInstances($original, [
+            'withName' => ['Test Task'],
+            'withDescription' => ['Test description'],
+            'withHighPriority' => []
+        ]);
     }
 
     public function testWithNameMethod(): void

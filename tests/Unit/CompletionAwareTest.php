@@ -8,21 +8,19 @@ use PHPUnit\Framework\TestCase;
 use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\AfterExistingFor;
 use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
+use Simensen\EphemeralTodos\Tests\Testing\AssertsCompletionAwareness;
+use Simensen\EphemeralTodos\Tests\Testing\AssertsImmutability;
 
 class CompletionAwareTest extends TestCase
 {
+    use AssertsCompletionAwareness, AssertsImmutability;
     public function testDefaultCompletionAwarenessAppliesToAll()
     {
         $afterDueBy = AfterDueBy::oneDay();
         $afterExistingFor = AfterExistingFor::oneDay();
 
-        $this->assertTrue($afterDueBy->appliesWhenComplete());
-        $this->assertTrue($afterDueBy->appliesWhenIncomplete());
-        $this->assertTrue($afterDueBy->appliesAlways());
-
-        $this->assertTrue($afterExistingFor->appliesWhenComplete());
-        $this->assertTrue($afterExistingFor->appliesWhenIncomplete());
-        $this->assertTrue($afterExistingFor->appliesAlways());
+        $this->assertHasCompletionAwareMethods($afterDueBy);
+        $this->assertHasCompletionAwareMethods($afterExistingFor);
     }
 
     public function testAndIsCompleteConfiguration()
@@ -30,13 +28,8 @@ class CompletionAwareTest extends TestCase
         $afterDueBy = AfterDueBy::oneDay()->andIsComplete();
         $afterExistingFor = AfterExistingFor::oneDay()->andIsComplete();
 
-        $this->assertTrue($afterDueBy->appliesWhenComplete());
-        $this->assertFalse($afterDueBy->appliesWhenIncomplete());
-        $this->assertFalse($afterDueBy->appliesAlways());
-
-        $this->assertTrue($afterExistingFor->appliesWhenComplete());
-        $this->assertFalse($afterExistingFor->appliesWhenIncomplete());
-        $this->assertFalse($afterExistingFor->appliesAlways());
+        $this->assertCompletionAwarenessState($afterDueBy, true, false, false);
+        $this->assertCompletionAwarenessState($afterExistingFor, true, false, false);
     }
 
     public function testAndIsIncompleteConfiguration()
@@ -44,13 +37,8 @@ class CompletionAwareTest extends TestCase
         $afterDueBy = AfterDueBy::oneDay()->andIsIncomplete();
         $afterExistingFor = AfterExistingFor::oneDay()->andIsIncomplete();
 
-        $this->assertFalse($afterDueBy->appliesWhenComplete());
-        $this->assertTrue($afterDueBy->appliesWhenIncomplete());
-        $this->assertFalse($afterDueBy->appliesAlways());
-
-        $this->assertFalse($afterExistingFor->appliesWhenComplete());
-        $this->assertTrue($afterExistingFor->appliesWhenIncomplete());
-        $this->assertFalse($afterExistingFor->appliesAlways());
+        $this->assertCompletionAwarenessState($afterDueBy, false, true, false);
+        $this->assertCompletionAwarenessState($afterExistingFor, false, true, false);
     }
 
     public function testWhetherCompletedOrNotConfiguration()
@@ -58,13 +46,8 @@ class CompletionAwareTest extends TestCase
         $afterDueBy = AfterDueBy::oneDay()->andIsComplete()->whetherCompletedOrNot();
         $afterExistingFor = AfterExistingFor::oneDay()->andIsIncomplete()->whetherCompletedOrNot();
 
-        $this->assertTrue($afterDueBy->appliesWhenComplete());
-        $this->assertTrue($afterDueBy->appliesWhenIncomplete());
-        $this->assertTrue($afterDueBy->appliesAlways());
-
-        $this->assertTrue($afterExistingFor->appliesWhenComplete());
-        $this->assertTrue($afterExistingFor->appliesWhenIncomplete());
-        $this->assertTrue($afterExistingFor->appliesAlways());
+        $this->assertCompletionAwarenessState($afterDueBy, true, true, true);
+        $this->assertCompletionAwarenessState($afterExistingFor, true, true, true);
     }
 
     public function testChainingCompletionAwareMethods()
@@ -94,22 +77,12 @@ class CompletionAwareTest extends TestCase
     public function testImmutabilityOfCompletionAwareMethods()
     {
         $original = AfterExistingFor::oneWeek();
-        $modified1 = $original->andIsComplete();
-        $modified2 = $original->andIsIncomplete();
-        $modified3 = $original->whetherCompletedOrNot();
-
-        // All should be different instances
-        $this->assertNotSame($original, $modified1);
-        $this->assertNotSame($original, $modified2);
-        $this->assertNotSame($original, $modified3);
-        $this->assertNotSame($modified1, $modified2);
-        $this->assertNotSame($modified1, $modified3);
-        $this->assertNotSame($modified2, $modified3);
-
-        // Original should remain unchanged
-        $this->assertTrue($original->appliesWhenComplete());
-        $this->assertTrue($original->appliesWhenIncomplete());
-        $this->assertTrue($original->appliesAlways());
+        
+        // Test immutability of completion awareness methods
+        $this->assertCompletionAwarenessImmutability($original);
+        
+        // Verify original remains unchanged
+        $this->assertCompletionAwarenessState($original, true, true, true);
     }
 
     public function testAppliesAlwaysLogic()

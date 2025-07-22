@@ -8,9 +8,11 @@ use Carbon\Carbon;
 use DateTimeZone;
 use Simensen\EphemeralTodos\Schedule;
 use Simensen\EphemeralTodos\Tests\TestCase;
+use Simensen\EphemeralTodos\Tests\Testing\AssertsImmutability;
 
 class ScheduleTest extends TestCase
 {
+    use AssertsImmutability;
     public function testCreateReturnsNewInstance(): void
     {
         $schedule = Schedule::create();
@@ -28,10 +30,12 @@ class ScheduleTest extends TestCase
     public function testWithCronExpressionReturnsNewInstance(): void
     {
         $original = Schedule::create();
-        $modified = $original->withCronExpression('0 0 * * *');
-
-        $this->assertNotSame($original, $modified);
+        
+        $this->assertMethodReturnsNewInstance($original, 'withCronExpression', '0 0 * * *');
+        
+        // Verify original is unchanged and new instance has correct value
         $this->assertEquals('* * * * *', $original->cronExpression());
+        $modified = $original->withCronExpression('0 0 * * *');
         $this->assertEquals('0 0 * * *', $modified->cronExpression());
     }
 
@@ -39,9 +43,8 @@ class ScheduleTest extends TestCase
     {
         $original = Schedule::create();
         $timezone = new DateTimeZone('America/New_York');
-        $modified = $original->withTimeZone($timezone);
-
-        $this->assertNotSame($original, $modified);
+        
+        $this->assertMethodReturnsNewInstance($original, 'withTimeZone', $timezone);
     }
 
     public function testEveryMinute(): void
@@ -456,13 +459,16 @@ class ScheduleTest extends TestCase
     {
         $original = Schedule::create();
 
-        $chained = $original
-            ->daily()
-            ->at('09:00')
-            ->weekdays()
-            ->when(function () { return true; });
+        // Test that chained method calls return new instances
+        $this->assertImmutableChain($original, [
+            'daily',
+            ['method' => 'at', 'args' => ['09:00']],
+            'weekdays',
+            ['method' => 'when', 'args' => [function () { return true; }]]
+        ]);
 
-        $this->assertNotSame($original, $chained);
+        // Verify original unchanged and final result is correct
+        $chained = $original->daily()->at('09:00')->weekdays()->when(function () { return true; });
         $this->assertEquals('* * * * *', $original->cronExpression());
         $this->assertEquals('0 9 * * 1-5', $chained->cronExpression());
     }

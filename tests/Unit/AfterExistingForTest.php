@@ -8,10 +8,12 @@ use PHPUnit\Framework\TestCase;
 use Simensen\EphemeralTodos\AfterExistingFor;
 use Simensen\EphemeralTodos\Time;
 use Simensen\EphemeralTodos\Tests\Testing\RelativeTimeDataProvider;
+use Simensen\EphemeralTodos\Tests\Testing\AssertsCompletionAwareness;
+use Simensen\EphemeralTodos\Tests\Testing\AssertsImmutability;
 
 class AfterExistingForTest extends TestCase
 {
-    use RelativeTimeDataProvider;
+    use RelativeTimeDataProvider, AssertsCompletionAwareness, AssertsImmutability;
     public function testCanCreateAfterExistingForInstance()
     {
         $afterExistingFor = AfterExistingFor::oneWeek();
@@ -23,43 +25,23 @@ class AfterExistingForTest extends TestCase
     public function testHasCompletionAwareMethods()
     {
         $afterExistingFor = AfterExistingFor::oneDay();
-
-        $this->assertTrue($afterExistingFor->appliesWhenComplete());
-        $this->assertTrue($afterExistingFor->appliesWhenIncomplete());
-        $this->assertTrue($afterExistingFor->appliesAlways());
+        $this->assertHasCompletionAwareMethods($afterExistingFor);
     }
 
     public function testCanConfigureCompletionAwareness()
     {
         $afterExistingFor = AfterExistingFor::oneDay();
-
-        $completeOnly = $afterExistingFor->andIsComplete();
-        $this->assertTrue($completeOnly->appliesWhenComplete());
-        $this->assertFalse($completeOnly->appliesWhenIncomplete());
-        $this->assertFalse($completeOnly->appliesAlways());
-
-        $incompleteOnly = $afterExistingFor->andIsIncomplete();
-        $this->assertFalse($incompleteOnly->appliesWhenComplete());
-        $this->assertTrue($incompleteOnly->appliesWhenIncomplete());
-        $this->assertFalse($incompleteOnly->appliesAlways());
-
-        $whetherCompletedOrNot = $afterExistingFor->whetherCompletedOrNot();
-        $this->assertTrue($whetherCompletedOrNot->appliesWhenComplete());
-        $this->assertTrue($whetherCompletedOrNot->appliesWhenIncomplete());
-        $this->assertTrue($whetherCompletedOrNot->appliesAlways());
+        $this->assertCanConfigureCompletionAwareness($afterExistingFor);
     }
 
     public function testCompletionAwareMethodsReturnNewInstances()
     {
         $original = AfterExistingFor::oneDay();
-        $complete = $original->andIsComplete();
-        $incomplete = $original->andIsIncomplete();
-        $whetherCompletedOrNot = $original->whetherCompletedOrNot();
-
-        $this->assertNotSame($original, $complete);
-        $this->assertNotSame($original, $incomplete);
-        $this->assertNotSame($original, $whetherCompletedOrNot);
-        $this->assertNotSame($complete, $incomplete);
+        $this->assertMultipleMethodsReturnNewInstances($original, [
+            'andIsComplete',
+            'andIsIncomplete',
+            'whetherCompletedOrNot'
+        ]);
     }
 
     public function testCanConvertToTimeObject()
