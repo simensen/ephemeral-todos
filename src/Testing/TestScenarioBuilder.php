@@ -219,19 +219,21 @@ class TestScenarioBuilder
         if ($this->scheduleTime !== null && $this->scheduleType !== null) {
             $schedule = match ($this->scheduleType) {
                 'daily' => Schedule::create()->dailyAt($this->scheduleTime),
-                'weekly' => Schedule::create()->weeklyOn($this->scheduleDay)->at($this->scheduleTime),
+                'weekly' => Schedule::create()->weeklyOn($this->convertDayNameToNumber($this->scheduleDay), $this->scheduleTime),
                 default => Schedule::create()->dailyAt($this->scheduleTime),
             };
             
             // If we have explicit create/due times, use them for create/due
             if ($this->createTime !== null && $this->dueTime !== null) {
-                $diffInMinutes = $this->dueTime->diffInMinutes($this->createTime);
-                $definition = $definition->create(BeforeDueBy::minutes($diffInMinutes))
+                $diffInMinutes = (int) $this->dueTime->diffInMinutes($this->createTime);
+                $beforeDueBy = $this->createBeforeDueByFromMinutes($diffInMinutes);
+                $definition = $definition->create($beforeDueBy)
                                         ->due($schedule);
             } elseif ($this->createTime !== null) {
                 // Create time specified, use schedule for due
-                $diffInMinutes = $this->baseTime->diffInMinutes($this->createTime);
-                $definition = $definition->create(BeforeDueBy::minutes($diffInMinutes))
+                $diffInMinutes = (int) $this->baseTime->diffInMinutes($this->createTime);
+                $beforeDueBy = $this->createBeforeDueByFromMinutes($diffInMinutes);
+                $definition = $definition->create($beforeDueBy)
                                         ->due($schedule);
             } else {
                 // No specific create time, use schedule for due
@@ -240,8 +242,9 @@ class TestScenarioBuilder
         } else {
             // Handle explicit create/due timing without schedule
             if ($this->createTime !== null && $this->dueTime !== null) {
-                $diffInMinutes = $this->dueTime->diffInMinutes($this->createTime);
-                $definition = $definition->create(BeforeDueBy::minutes($diffInMinutes));
+                $diffInMinutes = (int) $this->dueTime->diffInMinutes($this->createTime);
+                $beforeDueBy = $this->createBeforeDueByFromMinutes($diffInMinutes);
+                $definition = $definition->create($beforeDueBy);
                 $definition = $definition->due(Schedule::create()->dailyAt($this->dueTime->format('H:i')));
             } elseif ($this->createTime !== null) {
                 $definition = $definition->create(Schedule::create()->dailyAt($this->createTime->format('H:i')));
@@ -251,6 +254,44 @@ class TestScenarioBuilder
         }
 
         return $definition;
+    }
+
+    private function createBeforeDueByFromMinutes(int $minutes): BeforeDueBy
+    {
+        return match ($minutes) {
+            0 => BeforeDueBy::whenDue(),
+            1 => BeforeDueBy::oneMinute(),
+            2 => BeforeDueBy::twoMinutes(),
+            5 => BeforeDueBy::fiveMinutes(),
+            10 => BeforeDueBy::tenMinutes(),
+            15 => BeforeDueBy::fifteenMinutes(),
+            20 => BeforeDueBy::twentyMinutes(),
+            30 => BeforeDueBy::thirtyMinutes(),
+            45 => BeforeDueBy::fortyFiveMinutes(),
+            60 => BeforeDueBy::oneHour(),
+            90 => BeforeDueBy::ninetyMinutes(),
+            120 => BeforeDueBy::twoHours(),
+            180 => BeforeDueBy::threeHours(),
+            240 => BeforeDueBy::fourHours(),
+            360 => BeforeDueBy::sixHours(),
+            720 => BeforeDueBy::twelveHours(),
+            1440 => BeforeDueBy::oneDay(),
+            default => BeforeDueBy::fifteenMinutes(), // Default fallback
+        };
+    }
+
+    private function convertDayNameToNumber(string $dayName): int
+    {
+        return match (strtolower($dayName)) {
+            'sunday' => 0,
+            'monday' => 1,
+            'tuesday' => 2,
+            'wednesday' => 3,
+            'thursday' => 4,
+            'friday' => 5,
+            'saturday' => 6,
+            default => 1, // Default to Monday
+        };
     }
 
     public function __clone(): void

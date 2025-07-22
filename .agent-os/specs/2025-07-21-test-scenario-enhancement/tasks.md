@@ -21,12 +21,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 2.4 Deploy enhancement to EphemeralTodoTest.php and reduce test verbosity
   - [x] 2.5 Verify all tests pass
 
-- [ ] 3. Phase 3: Automatic Time Calculations
-  - [ ] 3.1 Write tests for relative time calculation engine
-  - [ ] 3.2 Implement configurable base time with relative offset support
-  - [ ] 3.3 Add automatic timestamp calculation for create/due/delete times
-  - [ ] 3.4 Deploy to ComprehensiveEdgeCaseTest.php and TodoLifecycleIntegrationTest.php
-  - [ ] 3.5 Verify all tests pass
+- [x] 3. Phase 3: Automatic Time Calculations
+  - [x] 3.1 Write tests for relative time calculation engine
+  - [x] 3.2 Implement configurable base time with relative offset support
+  - [x] 3.3 Add automatic timestamp calculation for create/due/delete times
+  - [x] 3.4 Deploy to ComprehensiveEdgeCaseTest.php and TodoLifecycleIntegrationTest.php
+  - [x] 3.5 Verify all tests pass
 
 - [ ] 4. Phase 4: Comprehensive Assertion Methods
   - [ ] 4.1 Write tests for deep Todo object validation and assertion framework
