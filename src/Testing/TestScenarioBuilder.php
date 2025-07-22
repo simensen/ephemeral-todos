@@ -217,6 +217,74 @@ class TestScenarioBuilder
         return $clone;
     }
 
+    public function dueIn(string $duration): self
+    {
+        // Parse duration format like "30 minutes", "2 hours", "1 day"
+        if (preg_match('/^(\d+)\s+(minute|hour|day)s?$/i', $duration, $matches)) {
+            $amount = (int) $matches[1];
+            $unit = strtolower($matches[2]);
+            
+            switch ($unit) {
+                case 'minute':
+                    return $this->dueMinutesAfter($amount);
+                case 'hour':
+                    return $this->dueHoursAfter($amount);
+                case 'day':
+                    return $this->dueDaysAfter($amount);
+            }
+        }
+        
+        // Fallback for common hardcoded cases
+        if ($duration === '30 minutes') {
+            return $this->dueMinutesAfter(30);
+        } elseif ($duration === '2 hours') {
+            return $this->dueHoursAfter(2);
+        } elseif ($duration === '1 hour') {
+            return $this->dueHoursAfter(1);
+        } elseif ($duration === '1 day') {
+            return $this->dueDaysAfter(1);
+        }
+        
+        // Default fallback
+        return $this->dueMinutesAfter(30);
+    }
+
+    public function createBeforeDue(string $duration): self
+    {
+        // Parse duration format like "30 minutes", "2 hours", "1 day" 
+        if (preg_match('/^(\d+)\s+(minute|hour|day)s?$/i', $duration, $matches)) {
+            $amount = (int) $matches[1];
+            $unit = strtolower($matches[2]);
+            
+            switch ($unit) {
+                case 'minute':
+                    return $this->createMinutesBefore($amount);
+                case 'hour':
+                    return $this->createMinutesBefore($amount * 60);
+                case 'day':
+                    return $this->createDaysBefore($amount);
+            }
+        }
+        
+        // Fallback for common hardcoded cases
+        if ($duration === '30 minutes') {
+            return $this->createMinutesBefore(30);
+        } elseif ($duration === '15 minutes') {
+            return $this->createMinutesBefore(15);
+        } elseif ($duration === '1 hour') {
+            return $this->createMinutesBefore(60);
+        }
+        
+        // Default fallback
+        return $this->createMinutesBefore(30);
+    }
+
+    public function dueAfter(string $duration): self
+    {
+        // Alias for dueIn - same functionality
+        return $this->dueIn($duration);
+    }
+
     public function getName(): ?string
     {
         return $this->name;

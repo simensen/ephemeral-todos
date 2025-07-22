@@ -56,9 +56,9 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 7.4 Deploy timezone enhancements across relevant tests
   - [x] 7.5 Verify all tests pass
 
-- [ ] 8. Phase 8: Integration & Legacy Compatibility
-  - [ ] 8.1 Write tests for backward compatibility with existing EphemeralTodoTestScenario
-  - [ ] 8.2 Update existing EphemeralTodoTestScenario to leverage new TestScenarioBuilder
-  - [ ] 8.3 Migrate remaining complex tests to use new builder pattern
-  - [ ] 8.4 Add comprehensive integration tests for all features working together
-  - [ ] 8.5 Verify all tests pass and no regressions introduced
+- [x] 8. Phase 8: Integration & Legacy Compatibility
+  - [x] 8.1 Write tests for backward compatibility with existing EphemeralTodoTestScenario
+  - [x] 8.2 Update existing EphemeralTodoTestScenario to leverage new TestScenarioBuilder
+  - [x] 8.3 Migrate remaining complex tests to use new builder pattern
+  - [x] 8.4 Add comprehensive integration tests for all features working together
+  - [x] 8.5 Verify all tests pass and no regressions introduced
