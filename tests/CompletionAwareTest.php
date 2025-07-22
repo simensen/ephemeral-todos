@@ -7,6 +7,7 @@ namespace Simensen\EphemeralTodos\Tests;
 use PHPUnit\Framework\TestCase;
 use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\AfterExistingFor;
+use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
 
 class CompletionAwareTest extends TestCase
 {
@@ -125,5 +126,51 @@ class CompletionAwareTest extends TestCase
 
         $backToBoth = $completeOnly->whetherCompletedOrNot();
         $this->assertTrue($backToBoth->appliesAlways());
+    }
+
+    /**
+     * Demonstration of TestScenarioBuilder deletion rule configuration.
+     * This showcases Phase 5: Deletion Rule Management functionality.
+     */
+    public function testTestScenarioBuilderDeletionRuleConfiguration()
+    {
+        // Demonstrate fluent deletion rule configuration
+        $scenario = TestScenarioBuilder::create()
+            ->withName('Completion Aware Todo')
+            ->daily()
+            ->at('10:00')
+            ->deleteAfterDue('1 day', 'complete')
+            ->deleteAfterExisting('1 week', 'incomplete');
+
+        // Verify deletion rule properties are configured correctly
+        $this->assertEquals('1 day', $scenario->getDeleteAfterDueInterval());
+        $this->assertEquals('complete', $scenario->getDeleteAfterDueCondition());
+        $this->assertEquals('1 week', $scenario->getDeleteAfterExistingInterval());
+        $this->assertEquals('incomplete', $scenario->getDeleteAfterExistingCondition());
+
+        // Test interval conversion utility
+        $this->assertEquals(86400, $scenario->convertIntervalToSeconds('1 day'));
+        $this->assertEquals(604800, $scenario->convertIntervalToSeconds('1 week'));
+
+        // Test completion state validation
+        $this->assertTrue($scenario->isValidCompletionState('complete'));
+        $this->assertTrue($scenario->isValidCompletionState('incomplete'));
+        $this->assertTrue($scenario->isValidCompletionState('either'));
+        $this->assertFalse($scenario->isValidCompletionState('maybe'));
+    }
+
+    /**
+     * Demonstration of deletion rule override behavior.
+     */
+    public function testDeletionRuleOverrideBehavior()
+    {
+        $scenario = TestScenarioBuilder::create()
+            ->withName('Override Test')
+            ->deleteAfterDue('1 hour', 'complete')
+            ->deleteAfterDue('1 day', 'incomplete'); // Should override previous
+
+        // Last configuration should win
+        $this->assertEquals('1 day', $scenario->getDeleteAfterDueInterval());
+        $this->assertEquals('incomplete', $scenario->getDeleteAfterDueCondition());
     }
 }

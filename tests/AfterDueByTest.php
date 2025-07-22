@@ -7,6 +7,7 @@ namespace Simensen\EphemeralTodos\Tests;
 use PHPUnit\Framework\TestCase;
 use Simensen\EphemeralTodos\AfterDueBy;
 use Simensen\EphemeralTodos\Time;
+use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
 
 class AfterDueByTest extends TestCase
 {
@@ -106,5 +107,79 @@ class AfterDueByTest extends TestCase
         $this->assertEquals(172800, AfterDueBy::twoDays()->timeInSeconds());
         $this->assertEquals(259200, AfterDueBy::threeDays()->timeInSeconds());
         $this->assertEquals(1209600, AfterDueBy::twoWeeks()->timeInSeconds());
+    }
+
+    /**
+     * Demonstration of TestScenarioBuilder integration with AfterDueBy deletion rules.
+     * This showcases Phase 5: Deletion Rule Management functionality.
+     */
+    public function testTestScenarioBuilderAfterDueByIntegration()
+    {
+        // Demonstrate TestScenarioBuilder creating AfterDueBy rules from intervals
+        $scenario = TestScenarioBuilder::create()
+            ->withName('AfterDueBy Demo')
+            ->daily()
+            ->at('09:00')
+            ->deleteAfterDue('2 hours', 'complete');
+
+        // Verify the interval conversion matches AfterDueBy values
+        $this->assertEquals('2 hours', $scenario->getDeleteAfterDueInterval());
+        $this->assertEquals('complete', $scenario->getDeleteAfterDueCondition());
+        
+        // Test that interval conversion aligns with AfterDueBy time values
+        $expectedSeconds = AfterDueBy::twoHours()->timeInSeconds();
+        $actualSeconds = $scenario->convertIntervalToSeconds('2 hours');
+        $this->assertEquals($expectedSeconds, $actualSeconds);
+
+        // Verify different interval mappings
+        $testCases = [
+            ['interval' => '1 hour', 'afterDueBy' => AfterDueBy::oneHour()],
+            ['interval' => '1 day', 'afterDueBy' => AfterDueBy::oneDay()],
+            ['interval' => '1 week', 'afterDueBy' => AfterDueBy::oneWeek()],
+            ['interval' => '3 days', 'afterDueBy' => AfterDueBy::threeDays()],
+        ];
+
+        foreach ($testCases as $testCase) {
+            $convertedSeconds = $scenario->convertIntervalToSeconds($testCase['interval']);
+            $expectedSeconds = $testCase['afterDueBy']->timeInSeconds();
+            
+            $this->assertEquals(
+                $expectedSeconds,
+                $convertedSeconds,
+                "Interval '{$testCase['interval']}' should convert to {$expectedSeconds} seconds"
+            );
+        }
+    }
+
+    /**
+     * Demonstration of completion state mapping between TestScenarioBuilder and AfterDueBy.
+     */
+    public function testCompletionStateMappingDemo()
+    {
+        // Show how TestScenarioBuilder completion states map to AfterDueBy methods
+        $baseAfterDueBy = AfterDueBy::oneDay();
+
+        // Default state (either) - should apply to all
+        $this->assertTrue($baseAfterDueBy->appliesWhenComplete());
+        $this->assertTrue($baseAfterDueBy->appliesWhenIncomplete());
+        $this->assertTrue($baseAfterDueBy->appliesAlways());
+
+        // 'complete' state mapping
+        $completeOnlyAfterDueBy = $baseAfterDueBy->andIsComplete();
+        $this->assertTrue($completeOnlyAfterDueBy->appliesWhenComplete());
+        $this->assertFalse($completeOnlyAfterDueBy->appliesWhenIncomplete());
+        $this->assertFalse($completeOnlyAfterDueBy->appliesAlways());
+
+        // 'incomplete' state mapping  
+        $incompleteOnlyAfterDueBy = $baseAfterDueBy->andIsIncomplete();
+        $this->assertFalse($incompleteOnlyAfterDueBy->appliesWhenComplete());
+        $this->assertTrue($incompleteOnlyAfterDueBy->appliesWhenIncomplete());
+        $this->assertFalse($incompleteOnlyAfterDueBy->appliesAlways());
+
+        // Verify TestScenarioBuilder validates these same states
+        $scenario = TestScenarioBuilder::create();
+        $this->assertTrue($scenario->isValidCompletionState('complete'));
+        $this->assertTrue($scenario->isValidCompletionState('incomplete'));
+        $this->assertTrue($scenario->isValidCompletionState('either'));
     }
 }

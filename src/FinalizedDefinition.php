@@ -64,7 +64,7 @@ final class FinalizedDefinition
         return $dueAt && Utils::equalToTheMinute($when, $dueAt);
     }
 
-    public function currentInstance(Carbon|DateTimeInterface|string|null $when = null): ?Todo
+    public function currentInstance(Carbon|DateTimeInterface|string|null $when = null): Todo
     {
         $when = Utils::toCarbon($when);
 
@@ -111,7 +111,7 @@ final class FinalizedDefinition
         );
     }
 
-    public function nextInstance(Carbon|DateTimeInterface|string|null $when = null): ?Todo
+    public function nextInstance(Carbon|DateTimeInterface|string|null $when = null): Todo
     {
         $when = Utils::toCarbon($when);
 
@@ -149,7 +149,7 @@ final class FinalizedDefinition
         );
     }
 
-    public function calculateDateFromRelativeTime(Carbon|DateTimeInterface|string|null $when, Time $time): ?Carbon
+    public function calculateDateFromRelativeTime(Carbon|DateTimeInterface|string|null $when, Time $time): Carbon
     {
         $when = Utils::toCarbon($when)->clone();
 
@@ -195,10 +195,11 @@ final class FinalizedDefinition
 
         $currentCreate = $this->create->schedule()->currentlyDueAt($when);
 
+        // return $currentCreate;
         return Utils::equalToTheMinute($when, $currentCreate) ? $when : null;
     }
 
-    public function calculateNextCreateWhenDueAt(Carbon|DateTimeInterface|string|null $when = null): ?Carbon
+    public function calculateNextCreateWhenDueAt(Carbon|DateTimeInterface|string|null $when = null): Carbon
     {
         $when = Utils::toCarbon($when)->clone();
 

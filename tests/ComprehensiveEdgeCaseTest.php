@@ -17,6 +17,7 @@ use Simensen\EphemeralTodos\Time;
 use Simensen\EphemeralTodos\Todo;
 use Simensen\EphemeralTodos\Todos;
 use Simensen\EphemeralTodos\Utils;
+use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
 
 class ComprehensiveEdgeCaseTest extends TestCase
 {
@@ -424,5 +425,42 @@ class ComprehensiveEdgeCaseTest extends TestCase
         $this->assertEquals('Original Task', $modifiedTodo->name());
         $this->assertEquals('Added description', $modifiedTodo->description());
         $this->assertEquals(4, $modifiedTodo->priority()); // High priority is 4
+    }
+
+    /**
+     * Demonstration of improved test verbosity with TestScenarioBuilder.
+     * This test shows how complex time calculations can be simplified.
+     */
+    public function testBuilderPatternDemonstration()
+    {
+        $todos = new Todos();
+
+        // OLD APPROACH: Manual definition creation (8+ lines for complex scenarios)
+        // $definition = Definition::define()
+        //     ->withName('Complex Meeting')
+        //     ->withHighPriority()
+        //     ->due(Schedule::create()->weeklyOn('monday')->at('09:00'))
+        //     ->create(BeforeDueBy::thirtyMinutes())
+        //     ->automaticallyDelete(AfterDueBy::oneDay()->andIsComplete());
+
+        // NEW APPROACH: TestScenarioBuilder (2-3 lines)
+        $scenario = TestScenarioBuilder::dailyMeeting()
+            ->withName('Complex Meeting');
+
+        $definition = $scenario->buildDefinition();
+        $todos->define($definition);
+
+        // Test that it works correctly - dailyMeeting is daily at 09:00
+        $testTime = Carbon::parse('2024-01-15 09:00:00'); // 9:00 AM
+        $readyTodos = $todos->readyToBeCreatedAt($testTime);
+
+        $this->assertCount(1, $readyTodos);
+        
+        $finalizedDefinition = $definition->finalize();
+        $todo = $finalizedDefinition->currentInstance($testTime);
+        
+        $this->assertNotNull($todo);
+        $this->assertEquals('Complex Meeting', $todo->name());
+        $this->assertEquals(4, $todo->priority()); // High priority from dailyMeeting preset
     }
 }

@@ -13,6 +13,7 @@ use Simensen\EphemeralTodos\Definition;
 use Simensen\EphemeralTodos\Schedule;
 use Simensen\EphemeralTodos\Todo;
 use Simensen\EphemeralTodos\Todos;
+use Simensen\EphemeralTodos\Testing\TestScenarioBuilder;
 
 class TodoLifecycleIntegrationTest extends TestCase
 {
@@ -317,5 +318,35 @@ class TodoLifecycleIntegrationTest extends TestCase
         $this->assertNull($todoInstance->automaticallyDeleteWhenIncompleteAndAfterDueAt());
         $this->assertNull($todoInstance->automaticallyDeleteWhenCompleteAndAfterExistingAt());
         $this->assertNull($todoInstance->automaticallyDeleteWhenIncompleteAndAfterExistingAt());
+    }
+
+    /**
+     * Demonstration of reduced verbosity using TestScenarioBuilder for lifecycle testing.
+     * Compare this to the testCompleteDailyTodoLifecycle method above.
+     */
+    public function testLifecycleWithBuilderPattern()
+    {
+        $todos = new Todos();
+
+        // OLD APPROACH (see testCompleteDailyTodoLifecycle): 6+ lines of definition setup
+        // NEW APPROACH: TestScenarioBuilder (2-3 lines)
+        $scenario = TestScenarioBuilder::dailyMeeting()
+            ->withName('Builder Standup Meeting');
+
+        $definition = $scenario->buildDefinition();
+        $todos->define($definition);
+
+        // Same lifecycle verification, but much cleaner setup
+        $testTime = Carbon::parse('2024-01-15 09:00:00'); // Meeting time
+        $readyToCreate = $todos->readyToBeCreatedAt($testTime);
+        
+        $this->assertCount(1, $readyToCreate);
+        
+        $todoInstance = $readyToCreate[0]->nextInstance($testTime);
+        
+        $this->assertInstanceOf(Todo::class, $todoInstance);
+        $this->assertEquals('Builder Standup Meeting', $todoInstance->name());
+        $this->assertEquals(4, $todoInstance->priority()); // High priority from dailyMeeting preset
+        $this->assertEquals($testTime, $todoInstance->dueAt());
     }
 }
