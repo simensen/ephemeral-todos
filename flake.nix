@@ -25,6 +25,7 @@
             configuredPkgs.php.packages.composer
             configuredPkgs.php.packages.phive
             pkgs.gnupg
+            pkgs.just
           ];
           shellHook = ''
             export PATH=$(pwd)/tools:$PATH
