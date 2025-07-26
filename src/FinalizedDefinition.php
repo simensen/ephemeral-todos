@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simensen\EphemeralTodos;
 
-use Carbon\Carbon;
 use DateTimeInterface;
+use DateTimeImmutable;
 
 final class FinalizedDefinition
 {
@@ -32,7 +32,7 @@ final class FinalizedDefinition
         return $this->priority;
     }
 
-    public function shouldBeCreatedAt(Carbon|DateTimeInterface|string|null $when = null): bool
+    public function shouldBeCreatedAt(DateTimeInterface|DateTimeImmutable|string $when): bool
     {
         $when = Utils::toCarbon($when);
 
@@ -45,7 +45,7 @@ final class FinalizedDefinition
         return $createAt && Utils::equalToTheMinute($when, $createAt);
     }
 
-    public function shouldBeDueAt(Carbon|DateTimeInterface|string|null $when = null): bool
+    public function shouldBeDueAt(DateTimeInterface|DateTimeImmutable|string $when): bool
     {
         if (!$this->due) {
             return false;
@@ -64,7 +64,7 @@ final class FinalizedDefinition
         return $dueAt && Utils::equalToTheMinute($when, $dueAt);
     }
 
-    public function currentInstance(Carbon|DateTimeInterface|string|null $when = null): Todo
+    public function currentInstance(DateTimeInterface|DateTimeImmutable|string $when): Todo
     {
         $when = Utils::toCarbon($when);
 
@@ -111,7 +111,7 @@ final class FinalizedDefinition
         );
     }
 
-    public function nextInstance(Carbon|DateTimeInterface|string|null $when = null): Todo
+    public function nextInstance(DateTimeInterface|DateTimeImmutable|string $when): Todo
     {
         $when = Utils::toCarbon($when);
 
@@ -156,7 +156,7 @@ final class FinalizedDefinition
         return $when->addSeconds($time->inSeconds());
     }
 
-    public function calculateDueDateWhenCreatedAt(Carbon|DateTimeInterface|string|null $when = null): ?Carbon
+    public function calculateDueDateWhenCreatedAt(DateTimeInterface|DateTimeImmutable|string $when): ?Carbon
     {
         if (!$this->due) {
             return null;
@@ -178,7 +178,7 @@ final class FinalizedDefinition
         return Utils::equalToTheMinute($when, $currentDue) ? $when : null;
     }
 
-    public function calculateCreateWhenDueAt(Carbon|DateTimeInterface|string|null $when = null): ?Carbon
+    public function calculateCreateWhenDueAt(DateTimeInterface|DateTimeImmutable|string $when): ?Carbon
     {
         $when = Utils::toCarbon($when)->clone();
 
@@ -199,7 +199,7 @@ final class FinalizedDefinition
         return Utils::equalToTheMinute($when, $currentCreate) ? $when : null;
     }
 
-    public function calculateNextCreateWhenDueAt(Carbon|DateTimeInterface|string|null $when = null): Carbon
+    public function calculateNextCreateWhenDueAt(DateTimeInterface|DateTimeImmutable|string $when): Carbon
     {
         $when = Utils::toCarbon($when)->clone();
 

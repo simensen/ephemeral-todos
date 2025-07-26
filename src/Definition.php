@@ -11,7 +11,6 @@ final class Definition
     private Schedulish $create;
     private ?int $priority;
     private Schedulish $due;
-
     private Time $automaticallyDeleteWhenCompleteAndAfterDueBy;
     private Time $automaticallyDeleteWhenIncompleteAndAfterDueBy;
     private Time $automaticallyDeleteWhenCompleteAndAfterExistingFor;

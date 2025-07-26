@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Simensen\EphemeralTodos\Tests\Unit;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use DateTimeZone;
 use Simensen\EphemeralTodos\Schedule;
 use Simensen\EphemeralTodos\Tests\TestCase;
@@ -29,7 +30,7 @@ class CronExpressionEdgeCasesTest extends TestCase
 
         // Cron expression is still valid, but Feb 29th won't exist in non-leap years
         $this->assertEquals('0 12 29 2 *', $schedule->cronExpression());
-        $this->assertFalse($schedule->isDue('2023-02-29 12:00:00')); // This date doesn't exist
+        $this->assertFalse($schedule->isDue(CarbonImmutable::parse('2023-02-29 12:00:00'))); // This date doesn't exist
     }
 
     public function testEndOfMonthVariations(): void

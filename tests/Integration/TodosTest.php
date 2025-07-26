@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Simensen\EphemeralTodos\Tests\Integration;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Simensen\EphemeralTodos\Tests\TestCase;
 use Simensen\EphemeralTodos\Tests\Testing\ManagesCarbonTime;
 use Simensen\EphemeralTodos\AfterDueBy;
@@ -193,7 +194,7 @@ class TodosTest extends TestCase
             ->due(Schedule::create()->daily()->at('10:00')));
 
         // Should use current time if no time specified
-        $readyNow = $todos->readyToBeCreatedAt();
+        $readyNow = $todos->readyToBeCreatedAt(CarbonImmutable::now());
         $this->assertCount(1, $readyNow);
     }
 

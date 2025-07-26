@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Simensen\EphemeralTodos;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Cron\CronExpression;
 use DateTimeInterface;
+use DateTimeImmutable;
 use DateTimeZone;
 
 trait ManagesCronExpression
@@ -77,9 +78,9 @@ trait ManagesCronExpression
     private function inTimeInterval(string $startTime, string $endTime): callable
     {
         [$now, $startTime, $endTime] = [
-            Carbon::now($this->timeZone ?? null),
-            Carbon::parse($startTime, $this->timeZone ?? null),
-            Carbon::parse($endTime, $this->timeZone ?? null),
+            CarbonImmutable::now($this->timeZone ?? null),
+            CarbonImmutable::parse($startTime, $this->timeZone ?? null),
+            CarbonImmutable::parse($endTime, $this->timeZone ?? null),
         ];
 
         if ($endTime->lessThan($startTime)) {
@@ -392,7 +393,7 @@ trait ManagesCronExpression
     public function lastDayOfMonth(string $time = '0:0'): static
     {
         return $this->dailyAt($time)
-            ->spliceIntoPosition(3, Carbon::now()->endOfMonth()->day);
+            ->spliceIntoPosition(3, CarbonImmutable::now()->endOfMonth()->day);
     }
 
     /**
@@ -450,26 +451,26 @@ trait ManagesCronExpression
         return $this->withCronExpression(implode(' ', $segments));
     }
 
-    public function isDue(Carbon|DateTimeInterface|string|null $when = null): bool
+    public function isDue(DateTimeInterface|DateTimeImmutable|string $when): bool
     {
         $when = $this->toCarbon($when);
 
         return $this->passesCronExpression($when);
     }
 
-    public function currentlyDueAt(Carbon|DateTimeInterface|string|null $when = null): Carbon
+    public function currentlyDueAt(DateTimeInterface|DateTimeImmutable|string $when): DateTimeImmutable
     {
         $when = $this->toCarbon($when);
 
         return $this->toCarbon((new CronExpression($this->cronExpression))->getNextRunDate($when, 0, true));
     }
 
-    protected function toCarbon(Carbon|DateTimeInterface|string|null $when = null): Carbon
+    protected function toCarbon(DateTimeInterface|DateTimeImmutable|string $when): DateTimeImmutable
     {
         return Utils::toCarbon($when, $this->timeZone ?? null);
     }
 
-    protected function passesCronExpression(Carbon|DateTimeInterface|string|null $when = null): bool
+    protected function passesCronExpression(DateTimeInterface|DateTimeImmutable|string $when): bool
     {
         return (new CronExpression($this->cronExpression))
             ->isDue(Utils::toCarbon($when)->toDateTimeString());
